@@ -11,6 +11,7 @@
   var SPEED_LIMIT_MPH = 60;   // Batas overspeed 60 MPH (~97 KM/H)
   var EXTREME_SPEED_MPH = 85; // Batas kecepatan ekstrem (>= 85 MPH)
   var MAX_DIAL_SPEED = 280;   // Skala maksimum dial tengah (0 - 280)
+  var SUB_RING_ARC = 212;     // Panjang busur 270deg untuk r=45
   var THEMES = ['theme-white', 'theme-pink', 'theme-yellow'];
 
   /* ================= DAFTAR 9 STASIUN RADIO FM BAWAAN ================= */
@@ -53,7 +54,6 @@
   var prevLockedState = null;
   var popTimer = null;
   var lockSnapTimer = null;
-  var greetingTimer = null;
 
   var elements = {
     engine: $('engine'),
@@ -112,7 +112,7 @@
     var cx = 140, cy = 140;
     var startAngle = -210; // Posisi angka 0 (kiri bawah)
     var endAngle = 30;     // Posisi angka 280 (kanan bawah), rentang 240 derajat
-    var totalRange = endAngle - startAngle; // 240
+    var totalRange = endAngle - startAngle;
 
     for (var val = 0; val <= MAX_DIAL_SPEED; val += 5) {
       var ratio = val / MAX_DIAL_SPEED;
@@ -162,105 +162,6 @@
     var hh = String(now.getHours()).padStart(2, '0');
     var mm = String(now.getMinutes()).padStart(2, '0');
     el.textContent = hh + ':' + mm;
-  }
-
-  /* ================= ANIMASI & SUARA SAMBUTAN "Hello Alonica" ================= */
-  var alonicaAudio = new Audio('hello_alonica.mp3');
-  alonicaAudio.preload = 'auto';
-
-  function speakHelloAlonicaFallback() {
-    if (!('speechSynthesis' in window) || typeof window.SpeechSynthesisUtterance !== 'function') return;
-    try {
-      window.speechSynthesis.cancel();
-      var utter = new SpeechSynthesisUtterance('Hello Alonica');
-      utter.pitch = 1.38;
-      utter.rate = 0.96;
-      utter.volume = 0.95;
-      utter.lang = 'en-US';
-
-      var voices = window.speechSynthesis.getVoices() || [];
-      var preferredKeywords = [
-        'Google US English',
-        'Google UK English Female',
-        'Microsoft Zira',
-        'Samantha',
-        'Victoria',
-        'Karen',
-        'Female'
-      ];
-
-      var chosenVoice = null;
-      for (var i = 0; i < preferredKeywords.length && !chosenVoice; i++) {
-        var kw = preferredKeywords[i].toLowerCase();
-        chosenVoice = voices.find(function (v) {
-          return v && v.name && v.name.toLowerCase().indexOf(kw) !== -1;
-        });
-      }
-      if (!chosenVoice) {
-        chosenVoice = voices.find(function (v) {
-          return v && /^en(-|_)/i.test(v.lang || '');
-        });
-      }
-      if (chosenVoice) {
-        utter.voice = chosenVoice;
-      }
-
-      window.speechSynthesis.speak(utter);
-    } catch (_) {}
-  }
-
-  function speakHelloAlonica() {
-    try {
-      alonicaAudio.currentTime = 0;
-      var playPromise = alonicaAudio.play();
-      if (playPromise && typeof playPromise.then === 'function') {
-        playPromise.catch(function () {
-          speakHelloAlonicaFallback();
-        });
-      }
-    } catch (_) {
-      speakHelloAlonicaFallback();
-    }
-  }
-
-  function triggerAlonicaGreeting() {
-    var banner = $('alonicaGreeting');
-    if (banner) banner.classList.add('show');
-    cockpit.classList.add('greeting-active');
-
-    speakHelloAlonica();
-
-    if (greetingTimer) clearTimeout(greetingTimer);
-    greetingTimer = setTimeout(function () {
-      if (banner) banner.classList.remove('show');
-      cockpit.classList.remove('greeting-active');
-    }, 3200);
-  }
-
-  window.triggerAlonicaGreeting = triggerAlonicaGreeting;
-  window.speakHelloAlonica = speakHelloAlonica;
-
-  function setupKittyBowGreeting() {
-    if ('speechSynthesis' in window && typeof window.speechSynthesis.getVoices === 'function') {
-      window.speechSynthesis.getVoices();
-      window.speechSynthesis.onvoiceschanged = function () {
-        window.speechSynthesis.getVoices();
-      };
-    }
-
-    var bow = $('kittyBow');
-    if (!bow) return;
-    bow.addEventListener('click', function (e) {
-      e.stopPropagation();
-      triggerAlonicaGreeting();
-    });
-    bow.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        e.stopPropagation();
-        triggerAlonicaGreeting();
-      }
-    });
   }
 
   /* ================= CHIME SEATBELT LEMBUT (MARIMBA D5 - A5) ================= */
@@ -1305,20 +1206,15 @@
     var rpmClamped = clamp(S.rpm, 0, 8000);
     var progress = rpmClamped / 8000;
 
-    // Kompatibilitas bar lama
     var fill = $('rpmFill');
     if (fill) fill.style.width = (progress * 100) + '%';
 
-    // Dial Bulat RPM Kiri Bawah (Keliling busur 220)
     var ringFill = $('rpmRingFill');
     if (ringFill) {
-      ringFill.setAttribute('stroke-dasharray', (progress * 220).toFixed(1) + ' 300');
+      ringFill.setAttribute('stroke-dasharray', (progress * SUB_RING_ARC).toFixed(1) + ' 300');
     }
 
-    // Angka Digital RPM (contoh: 850)
     setText('rpmTextValue', Math.round(rpmClamped));
-
-    // Segmen Bar Samping Kiri Bawah
     updateSideSegments('rpmSideSegments', S.engine ? Math.max(0.2, progress) : 0, true);
 
     cockpit.classList.toggle('redline', progress > 0.85);
@@ -1428,7 +1324,6 @@
       popTimer = setTimeout(function () {
         cockpit.classList.remove('engine-pop');
       }, 650);
-      triggerAlonicaGreeting();
     }
     prevEngineState = S.engine;
 
@@ -1458,7 +1353,7 @@
 
     var ringFill = $('fuelRingFill');
     if (ringFill) {
-      ringFill.setAttribute('stroke-dasharray', (ratio * 220).toFixed(1) + ' 300');
+      ringFill.setAttribute('stroke-dasharray', (ratio * SUB_RING_ARC).toFixed(1) + ' 300');
     }
     updateSideSegments('fuelSideSegments', ratio, false);
 
@@ -1472,7 +1367,7 @@
 
     var ringFill = $('healthRingFill');
     if (ringFill) {
-      ringFill.setAttribute('stroke-dasharray', (ratio * 220).toFixed(1) + ' 300');
+      ringFill.setAttribute('stroke-dasharray', (ratio * SUB_RING_ARC).toFixed(1) + ' 300');
     }
     updateSideSegments('healthSideSegments', ratio, false);
 
@@ -1693,7 +1588,7 @@
 
   cockpit.addEventListener('mousedown', function (e) {
     if (e.button !== 0 || !mode) return;
-    if (e.target.closest('#settingsMenu') || e.target.closest('#mini-music-pill') || e.target.closest('#kittyBow')) return;
+    if (e.target.closest('#settingsMenu') || e.target.closest('#mini-music-pill')) return;
     e.preventDefault();
     drag = { x: e.clientX, y: e.clientY, tx: L.tx, ty: L.ty, scale: L.scale };
   });
@@ -1734,7 +1629,6 @@
   loadLayout();
   clampLayout();
   setMode(null);
-  setupKittyBowGreeting();
   setupMusicPlayer();
 
   window.setEngine(false);
@@ -1749,11 +1643,6 @@
   window.setSeatbelts(false);
   window.setDoorLock(false);
   window.setOdometer(0);
-
-  // Sambutan otomatis saat HUD pertama kali boot
-  setTimeout(function () {
-    triggerAlonicaGreeting();
-  }, 350);
 
   window.addEventListener('message', function (ev) {
     var d = ev.data;

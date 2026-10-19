@@ -167,44 +167,35 @@
 
     <!-- WRAPPER UTAMA CLUSTER CYBER NEON -->
     <div class="cluster-wrapper">
-
-      <!-- BANNER POP-UP SAMBUTAN "Hello Alonica" -->
-      <div id="alonicaGreeting" class="alonica-greeting" role="status" aria-live="polite">
-        <span class="greeting-sparkle">⚡</span>
-        <span class="greeting-text">Hello Alonica ✨</span>
-        <span class="greeting-sparkle">⚡</span>
-      </div>
-
-      <!-- BODI UTAMA CLUSTER -->
       <div class="hud-card cluster-housing">
         <div id="hudNotice" class="hud-notice" role="status" aria-live="polite"></div>
 
         <!-- SVG DEKORASI BINGKAI POLIGON FUTURISTIK -->
         <svg class="cluster-frame-svg" viewBox="0 0 680 340" fill="none" aria-hidden="true">
           <!-- Siluet Luar Dashboard -->
-          <path class="frame-bg" d="M 48 56 L 210 38 C 260 12, 420 12, 470 38 L 632 56 L 672 155 L 638 268 L 578 324 L 102 324 L 42 268 L 8 155 Z" />
+          <path class="frame-bg" d="M 44 48 L 214 34 C 268 8, 412 8, 466 34 L 636 48 L 672 152 L 638 264 L 582 324 L 98 324 L 42 264 L 8 152 Z" />
           <!-- Garis Neon Luar -->
-          <path class="frame-line-outer" d="M 52 60 L 212 42 C 262 16, 418 16, 468 42 L 628 60 L 664 155 L 632 264 L 574 318 L 106 318 L 48 264 L 16 155 Z" />
+          <path class="frame-line-outer" d="M 49 53 L 216 39 C 268 14, 412 14, 464 39 L 631 53 L 664 152 L 632 260 L 578 318 L 102 318 L 48 260 L 16 152 Z" />
           <!-- Aksen Sudut Kiri & Kanan -->
-          <path class="frame-accent" d="M 28 135 L 55 72 L 195 58" />
-          <path class="frame-accent" d="M 652 135 L 625 72 L 485 58" />
-          <path class="frame-accent-glow" d="M 70 258 L 220 258" />
-          <path class="frame-accent-glow" d="M 460 258 L 610 258" />
-          <!-- Garis Panel Bawah -->
-          <polygon class="bottom-bar-poly" points="108,270 572,270 596,312 84,312" />
+          <path class="frame-accent" d="M 26 138 L 54 64 L 200 50" />
+          <path class="frame-accent" d="M 654 138 L 626 64 L 480 50" />
+          <path class="frame-accent-glow" d="M 64 260 L 216 260" />
+          <path class="frame-accent-glow" d="M 464 260 L 616 260" />
+          <!-- Trapesium Bar Bawah -->
+          <polygon class="bottom-bar-poly" points="104,272 576,272 598,312 82,312" />
         </svg>
 
-        <!-- GRID 3 KOLOM UTAMA (KIRI: GEAR & RPM | TENGAH: SPEEDOMETER | KANAN: FUEL & ENGINE) -->
+        <!-- GRID 3 KOLOM UTAMA (KIRI: GEAR & RPM | TENGAH: SPEED | KANAN: FUEL & ENGINE) -->
         <div class="cluster-main-grid">
 
           <!-- ================= SAYAP KIRI: GEAR (ATAS) & RPM (BAWAH) ================= -->
           <div class="wing left-wing">
             <!-- Panel Atas: GIGI / GEAR -->
-            <div class="gear-Wing-panel" title="Current Gear">
-              <svg class="gear-box-svg" viewBox="0 0 210 105" preserveAspectRatio="none" aria-hidden="true">
-                <polygon class="gear-poly-bg" points="28,10 202,4 188,92 8,98" />
-                <polyline class="gear-poly-glow" points="12,86 30,14 196,8" />
-                <polyline class="gear-poly-sub" points="35,95 185,90 198,24" />
+            <div class="gear-wing-panel" title="Current Gear">
+              <svg class="gear-box-svg" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">
+                <polygon class="gear-poly-bg" points="24,8 194,4 180,92 6,96" />
+                <polyline class="gear-poly-glow" points="10,86 26,12 188,8" />
+                <polyline class="gear-poly-sub" points="32,93 177,89 190,24" />
               </svg>
               <div class="gear-wing-content">
                 <div id="gearValue" class="gear-main-digit">N</div>
@@ -212,8 +203,8 @@
               </div>
             </div>
 
-            <!-- Panel Bawah: RPM GAUGE & BAR SUHU/BEBAN -->
-            <div class="sub-gauge-wrap rpm-gauge-wrap" title="Engine RPM">
+            <!-- Panel Bawah: RPM GAUGE & BAR SUHU -->
+            <div class="sub-gauge-wrap left-gauge-wrap" title="Engine RPM">
               <!-- Bar Vertikal Melengkung H - C di Kiri RPM -->
               <div class="side-arc-bar left-arc">
                 <span class="arc-lbl top-h">H</span>
@@ -234,10 +225,9 @@
               <div class="sub-dial rpm-dial">
                 <svg class="sub-dial-svg" viewBox="0 0 120 120" aria-hidden="true">
                   <circle class="sub-ring-outer" cx="60" cy="60" r="54" />
-                  <circle class="sub-ring-track" cx="60" cy="60" r="46" stroke-dasharray="220 300" stroke-dashoffset="0" transform="rotate(135 60 60)" />
-                  <circle id="rpmRingFill" class="sub-ring-fill" cx="60" cy="60" r="46" stroke-dasharray="0 300" stroke-dashoffset="0" transform="rotate(135 60 60)" />
+                  <circle class="sub-ring-track" cx="60" cy="60" r="45" stroke-dasharray="212 300" transform="rotate(135 60 60)" />
+                  <circle id="rpmRingFill" class="sub-ring-fill" cx="60" cy="60" r="45" stroke-dasharray="0 300" transform="rotate(135 60 60)" />
                 </svg>
-                <!-- Fallback kompatibilitas bar untuk script -->
                 <div id="rpmFill" class="hidden-compat"></div>
 
                 <div class="sub-dial-inner">
@@ -254,14 +244,8 @@
             </div>
           </div>
 
-          <!-- ================= TENGAH: PENCATAT SPEED UTAMA (MAIN SPEEDOMETER) ================= -->
+          <!-- ================= TENGAH: MAIN SPEEDOMETER DIAL ================= -->
           <div class="center-speedo-zone">
-            <!-- Tombol tersembunyi/interaktif di bagian atas ring tengah untuk sapaan "Hello Alonica" -->
-            <div id="kittyBow" class="center-crest-btn no-drag" role="button" tabindex="0" title="Klik untuk sapaan Hello Alonica!">
-              <img id="clusterLogo" src="logo.png" alt="" class="cluster-logo" onerror="this.style.display='none'">
-              <span class="crest-glow-dot"></span>
-            </div>
-
             <div class="main-speedo-dial">
               <svg class="speedo-svg" viewBox="0 0 280 280" aria-hidden="true">
                 <defs>
@@ -276,12 +260,12 @@
                   </filter>
                 </defs>
 
-                <!-- Lingkaran Bezel Luar & Dalam -->
+                <!-- Lingkaran Bezel Luar, Tengah & Inti -->
                 <circle class="speedo-bezel-outer" cx="140" cy="140" r="134" />
-                <circle class="speedo-bezel-mid" cx="140" cy="140" r="126" />
-                <circle class="speedo-core-ring" cx="140" cy="140" r="76" />
+                <circle class="speedo-bezel-mid" cx="140" cy="140" r="125" />
+                <circle class="speedo-core-ring" cx="140" cy="140" r="72" />
 
-                <!-- Busur Track & Busur Progress Kecepatan (240 Derajat, Keliling r=114 -> ~477.5) -->
+                <!-- Busur Track & Busur Progress Kecepatan (240 Derajat, r=114 -> 477.5) -->
                 <circle class="speedo-arc-track" cx="140" cy="140" r="114"
                         stroke-dasharray="477.5 800" transform="rotate(150 140 140)" />
                 <circle class="speedo-arc-redzone" cx="140" cy="140" r="114"
@@ -289,27 +273,25 @@
                 <circle id="speedArcFill" class="speedo-arc-fill" cx="140" cy="140" r="114"
                         stroke="url(#speedArcGrad)" stroke-dasharray="0 800" transform="rotate(150 140 140)" filter="url(#neonGlow)" />
 
-                <!-- Grup Tick Marks & Angka 0 - 280 (Digenerate presisi via JS) -->
+                <!-- Grup Tick Marks & Angka Skala 0 - 280 -->
                 <g id="speedoTicksGroup"></g>
                 <g id="speedoNumsGroup"></g>
 
-                <!-- Jarum Speedometer Neon (Berputar dari -120deg s/d +120deg) -->
+                <!-- Jarum Speedometer Neon -->
                 <g id="speedNeedleGroup" class="speed-needle-group" transform="rotate(-120 140 140)">
                   <polygon class="needle-glow" points="140,26 135,140 145,140" />
                   <polygon class="needle-core" points="140,30 137.5,140 142.5,140" />
-                  <circle class="needle-cap" cx="140" cy="140" r="11" />
+                  <circle class="needle-cap" cx="140" cy="140" r="10" />
                 </g>
               </svg>
 
-              <!-- Tampilan Digital Kecepatan di Tengah Dial -->
+              <!-- Tampilan Digital Kecepatan Bersih di Tengah Dial -->
               <div class="speedo-center-readout">
-                <div class="speedo-top-caption">PENCATAT<br>SPEED UTAMA</div>
                 <div id="speedValue" class="speed-main-digits">000</div>
                 <div class="speed-unit-row">
                   <span id="speedUnit">KM/H</span>
                   <span id="extremeBadge" class="extreme-badge">MAX!</span>
                 </div>
-                <div class="speedo-bot-caption">SPEEDOMETER</div>
               </div>
             </div>
           </div>
@@ -317,7 +299,7 @@
           <!-- ================= SAYAP KANAN: FUEL (ATAS) & ENGINE HEALTH (BAWAH) ================= -->
           <div class="wing right-wing">
             <!-- Panel Atas: FUEL GAUGE -->
-            <div class="sub-gauge-wrap fuel-gauge-wrap" title="Fuel Level">
+            <div class="sub-gauge-wrap right-gauge-wrap" title="Fuel Level">
               <div class="side-arc-bar right-arc">
                 <span class="arc-lbl top-f">F</span>
                 <div id="fuelSideSegments" class="arc-segments">
@@ -333,8 +315,8 @@
               <div class="sub-dial fuel-dial">
                 <svg class="sub-dial-svg" viewBox="0 0 120 120" aria-hidden="true">
                   <circle class="sub-ring-outer" cx="60" cy="60" r="54" />
-                  <circle class="sub-ring-track" cx="60" cy="60" r="46" stroke-dasharray="220 300" transform="rotate(135 60 60)" />
-                  <circle id="fuelRingFill" class="sub-ring-fill" cx="60" cy="60" r="46" stroke-dasharray="220 300" transform="rotate(135 60 60)" />
+                  <circle class="sub-ring-track" cx="60" cy="60" r="45" stroke-dasharray="212 300" transform="rotate(135 60 60)" />
+                  <circle id="fuelRingFill" class="sub-ring-fill" cx="60" cy="60" r="45" stroke-dasharray="212 300" transform="rotate(135 60 60)" />
                 </svg>
                 <div class="sub-dial-inner">
                   <svg class="sub-icon fuel-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -348,7 +330,7 @@
             </div>
 
             <!-- Panel Bawah: ENGINE / HEALTH GAUGE -->
-            <div class="sub-gauge-wrap engine-gauge-wrap" title="Engine Health">
+            <div class="sub-gauge-wrap right-gauge-wrap" title="Engine Health">
               <div class="side-arc-bar right-arc">
                 <span class="arc-lbl top-h">H</span>
                 <div id="healthSideSegments" class="arc-segments">
@@ -364,8 +346,8 @@
               <div class="sub-dial engine-dial">
                 <svg class="sub-dial-svg" viewBox="0 0 120 120" aria-hidden="true">
                   <circle class="sub-ring-outer" cx="60" cy="60" r="54" />
-                  <circle class="sub-ring-track" cx="60" cy="60" r="46" stroke-dasharray="220 300" transform="rotate(135 60 60)" />
-                  <circle id="healthRingFill" class="sub-ring-fill" cx="60" cy="60" r="46" stroke-dasharray="220 300" transform="rotate(135 60 60)" />
+                  <circle class="sub-ring-track" cx="60" cy="60" r="45" stroke-dasharray="212 300" transform="rotate(135 60 60)" />
+                  <circle id="healthRingFill" class="sub-ring-fill" cx="60" cy="60" r="45" stroke-dasharray="212 300" transform="rotate(135 60 60)" />
                 </svg>
                 <div class="sub-dial-inner">
                   <div id="engineCheck" class="vehicle-indicator engine-dial-icon" title="Engine Status">
@@ -438,9 +420,7 @@
           </div>
         </div>
 
-        <!-- Container kompatibilitas tersembunyi -->
         <div id="heartCharms" class="hidden-compat" aria-hidden="true"></div>
-
       </div>
     </div>
 
