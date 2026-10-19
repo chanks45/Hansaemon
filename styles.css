@@ -1,0 +1,1392 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent !important;
+  font-family: "Rajdhani", "Chakra Petch", sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+.hidden-compat {
+  display: none !important;
+}
+
+/* ===== COCKPIT & 3 PRESET TEMA NEON FUTURISTIK ===== */
+#cockpit {
+  --bg-dark: rgba(8, 5, 18, 0.92);
+  --bg-panel: rgba(15, 9, 32, 0.88);
+  --hud: #a855f7;
+  --hud-bright: #e9d5ff;
+  --hud-rgb: 168, 85, 247;
+  --accent: #ec4899;
+  --accent-rgb: 236, 72, 153;
+  --cyan: #38bdf8;
+  --danger: #ff1744;
+
+  position: fixed;
+  right: 28px;
+  bottom: 20px;
+  width: 680px;
+  padding: 38px 10px 10px;
+  transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--scale, 1));
+  transform-origin: right bottom;
+  background: transparent !important;
+  color: var(--hud-bright);
+  z-index: 9999;
+  animation: boot 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 1. Theme White -> Cyber Neon Violet (Sesuai Gambar Referensi) */
+#cockpit.theme-white {
+  --hud: #9d4edd;
+  --hud-bright: #f3e8ff;
+  --hud-rgb: 157, 78, 221;
+  --accent: #ff2a85;
+  --accent-rgb: 255, 42, 133;
+}
+
+/* 2. Theme Pink -> Hyper Magenta & Rose */
+#cockpit.theme-pink {
+  --hud: #ff2e93;
+  --hud-bright: #ffe5f1;
+  --hud-rgb: 255, 46, 147;
+  --accent: #00f5d4;
+  --accent-rgb: 0, 245, 212;
+}
+
+/* 3. Theme Yellow -> Cyber Gold & Electric Cyan */
+#cockpit.theme-yellow {
+  --hud: #00e5ff;
+  --hud-bright: #e0fbfc;
+  --hud-rgb: 0, 229, 255;
+  --accent: #ffb703;
+  --accent-rgb: 255, 183, 3;
+}
+
+#cockpit.mode-move { cursor: move; }
+#cockpit.mode-resize { cursor: ns-resize; }
+
+/* ===== FLOATING MINI AUDIO CONTROLLER DI ATAS CLUSTER ===== */
+.mini-music-pill {
+  position: absolute;
+  left: 140px;
+  right: 140px;
+  bottom: calc(100% - 26px);
+  height: 36px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(12, 8, 26, 0.95);
+  border: 2px solid var(--hud);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65), 0 0 14px rgba(var(--hud-rgb), 0.45);
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px) scale(0.96);
+  visibility: hidden;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+  z-index: 9995;
+}
+
+.mini-music-pill.show {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+#settingsMenu.open ~ .cluster-wrapper #mini-music-pill,
+#settingsMenu.open ~ #mini-music-pill {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px) scale(0.95);
+}
+
+.mini-pill-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.mini-source-badge {
+  padding: 2px 7px;
+  border-radius: 999px;
+  font: 800 9px "Orbitron", sans-serif;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--hud-bright);
+  border: 1px solid rgba(var(--hud-rgb), 0.55);
+}
+
+.mini-source-badge.yt-mode {
+  background: rgba(255, 42, 85, 0.25);
+  border-color: rgba(255, 92, 92, 0.6);
+  color: #ffd6d6;
+}
+
+.mini-source-badge.radio-mode {
+  background: rgba(var(--hud-rgb), 0.25);
+  border-color: rgba(var(--hud-rgb), 0.65);
+  color: #f3e8ff;
+}
+
+.mini-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+  width: 13px;
+}
+
+.mini-eq span {
+  width: 2.5px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.4;
+  transition: height 0.15s ease, opacity 0.15s ease;
+}
+
+.mini-music-pill.playing .mini-eq span {
+  opacity: 1;
+  animation: eqBounceMini 0.52s ease-in-out infinite alternate;
+}
+.mini-music-pill.playing .mini-eq span:nth-child(2) { animation-delay: 0.16s; }
+.mini-music-pill.playing .mini-eq span:nth-child(3) { animation-delay: 0.32s; }
+
+.mini-track-wrap {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mini-track-title {
+  font: 700 11.5px "Rajdhani", sans-serif;
+  letter-spacing: 0.5px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-pill-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mini-ctrl-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 10px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+}
+
+.mini-ctrl-btn:hover {
+  background: var(--hud);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.mini-play-toggle {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+}
+
+.mini-close-btn { font-size: 13px; opacity: 0.75; }
+.mini-close-btn:hover { background: rgba(255, 59, 59, 0.65); color: #fff; opacity: 1; }
+
+/* ===== MENU PENGATURAN (KLIK KANAN) ===== */
+#settingsMenu {
+  position: absolute;
+  left: 110px;
+  right: 110px;
+  bottom: calc(100% - 20px);
+  padding: 14px;
+  background: rgba(11, 7, 24, 0.96);
+  border: 2px solid var(--hud);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 22px rgba(var(--hud-rgb), 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px) scale(0.96);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  cursor: default;
+  z-index: 10000;
+}
+
+#settingsMenu.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.settings-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 800 11px "Orbitron", sans-serif;
+  letter-spacing: 1px;
+  color: var(--hud-bright);
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(var(--hud-rgb), 0.35);
+}
+
+.settings-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  border-radius: 50%;
+}
+
+.icon-button {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--hud-bright);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.menu-btns {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.menu-btns button {
+  flex: 1;
+  padding: 7px 4px;
+  font: 700 10.5px "Orbitron", sans-serif;
+  letter-spacing: 0.5px;
+  color: #fff;
+  background: rgba(var(--hud-rgb), 0.12);
+  border: 1.5px solid var(--hud);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.menu-btns button:hover,
+.menu-btns button.active {
+  background: var(--hud);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(var(--hud-rgb), 0.65);
+  transform: translateY(-1px);
+}
+
+/* ===== PANEL AUDIO (RADIO FM & YOUTUBE) ===== */
+.music-panel {
+  margin-top: 10px;
+  padding: 9px;
+  border: 1px solid rgba(var(--hud-rgb), 0.35);
+  border-radius: 12px;
+  background: rgba(var(--hud-rgb), 0.08);
+}
+
+.audio-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.audio-tab {
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  font: 700 10px "Orbitron", sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.audio-tab.active {
+  background: var(--hud);
+  color: #fff;
+}
+
+.audio-tab-pane { display: none; }
+.audio-tab-pane.active { display: block; }
+
+.radio-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(var(--hud-rgb), 0.3);
+  border-radius: 8px;
+}
+
+.radio-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(var(--hud-rgb), 0.25);
+  border: 1px solid rgba(var(--hud-rgb), 0.55);
+  color: #fff;
+  font: 800 8px "Orbitron", sans-serif;
+}
+
+.radio-meta { flex: 1; min-width: 0; }
+.radio-station-name {
+  font: 700 11.5px "Rajdhani", sans-serif;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.radio-status-text {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.radio-eq { display: flex; align-items: flex-end; gap: 2px; height: 13px; }
+.radio-eq span { width: 2.5px; height: 3px; background: var(--accent); border-radius: 1px; opacity: 0.35; }
+#cockpit.radio-active .radio-eq span { opacity: 1; animation: eqBounce 0.55s ease-in-out infinite alternate; }
+#cockpit.radio-active .radio-eq span:nth-child(2) { animation-delay: 0.15s; }
+#cockpit.radio-active .radio-eq span:nth-child(3) { animation-delay: 0.3s; }
+#cockpit.radio-active .radio-eq span:nth-child(4) { animation-delay: 0.45s; }
+
+.radio-select-wrap { margin-top: 6px; }
+.radio-select {
+  width: 100%;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(var(--hud-rgb), 0.45);
+  color: #fff;
+  font: 600 11px "Rajdhani", sans-serif;
+  outline: none;
+  cursor: pointer;
+}
+.radio-select option { background: #120a24; color: #fff; }
+
+.volume-pct {
+  font: 700 9px "Orbitron", sans-serif;
+  min-width: 28px;
+  text-align: right;
+  color: #fff;
+}
+
+.radio-track-badge {
+  padding: 1px 5px;
+  border-radius: 3px;
+  font: 800 7.5px "Orbitron", sans-serif;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.75);
+  flex-shrink: 0;
+}
+.radio-track-badge.custom {
+  background: rgba(var(--hud-rgb), 0.3);
+  border: 1px solid rgba(var(--hud-rgb), 0.6);
+  color: #fff;
+}
+
+.track-del-btn {
+  margin-left: 4px;
+  width: 15px; height: 15px;
+  border-radius: 3px;
+  background: rgba(255, 59, 59, 0.25);
+  color: #ff9999;
+  font-size: 11px;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.track-del-btn:hover { background: rgba(255, 59, 59, 0.8); color: #fff; }
+
+.music-now-playing { display: flex; gap: 10px; align-items: center; }
+.music-video-wrap {
+  position: relative;
+  width: 90px; height: 52px; flex: 0 0 90px;
+  border-radius: 6px; overflow: hidden;
+  background: #0d081a;
+  border: 1px solid rgba(var(--hud-rgb), 0.4);
+}
+.music-video-wrap iframe {
+  position: absolute !important; left: 0 !important; top: 0 !important;
+  width: 1px !important; height: 1px !important;
+  opacity: 0 !important; pointer-events: none !important;
+}
+.music-cover { position: absolute; inset: 0; width: 100%; height: 100%; display: none; object-fit: cover; }
+.music-cover.show { display: block; }
+.music-placeholder { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(0, 0, 0, 0.55); }
+.music-placeholder.hide { display: none; }
+.music-placeholder-note { font-size: 22px; color: var(--hud); }
+
+.music-track-meta { min-width: 0; flex: 1; }
+#music-track-title {
+  font: 700 10px "Orbitron", sans-serif;
+  color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#music-track-subtitle { margin-top: 2px; font-size: 9.5px; color: rgba(255, 255, 255, 0.72); }
+
+.music-progress-row {
+  display: grid; grid-template-columns: 28px 1fr 28px;
+  align-items: center; gap: 6px; margin-top: 6px; font-size: 9px; color: #fff;
+}
+.music-range { width: 100%; accent-color: var(--hud); cursor: pointer; height: 8px; }
+
+.music-main-controls { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 6px 0 4px; }
+.music-control-btn { background: transparent; border: 0; color: #fff; font-size: 14px; cursor: pointer; }
+.music-play-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--hud); color: #fff;
+  border: 0; font-size: 11px; cursor: pointer;
+  display: grid; place-items: center; font-weight: 700;
+  box-shadow: 0 0 10px rgba(var(--hud-rgb), 0.6);
+}
+
+.music-volume-row { display: flex; align-items: center; gap: 6px; }
+.music-icon-btn { background: transparent; border: 0; color: #fff; cursor: pointer; font-size: 13px; }
+.music-small-btn {
+  padding: 2px 8px; border-radius: 5px;
+  background: rgba(var(--hud-rgb), 0.2); border: 1px solid var(--hud);
+  color: #fff; font: 700 10px "Orbitron", sans-serif; cursor: pointer;
+}
+
+.music-add-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 4px; margin-top: 6px; }
+.music-add-row.hide { display: none !important; }
+.music-add-row input {
+  background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(var(--hud-rgb), 0.45);
+  border-radius: 5px; color: #fff; padding: 4px 6px; font-size: 9.5px; outline: none;
+}
+.music-add-primary { background: var(--hud); color: #fff; }
+
+.music-tools-row { display: flex; gap: 6px; margin-top: 6px; }
+.music-tool-btn {
+  flex: 1; height: 24px;
+  background: rgba(var(--hud-rgb), 0.12); border: 1px solid var(--hud);
+  border-radius: 5px; color: #fff; font-size: 11px; cursor: pointer;
+}
+.music-tool-btn.active { background: var(--hud); color: #fff; }
+
+.music-playlist-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(var(--hud-rgb), 0.24);
+  font: 700 8px "Orbitron", sans-serif; color: #fff;
+}
+.music-text-btn { background: transparent; border: 0; color: #fff; cursor: pointer; font-size: 12px; }
+.music-playlist { max-height: 70px; overflow-y: auto; margin-top: 4px; }
+.music-empty { padding: 6px; text-align: center; font-size: 9.5px; color: rgba(255, 255, 255, 0.6); }
+
+.music-track-row {
+  width: 100%; display: flex; align-items: center; gap: 6px;
+  padding: 3px 4px; border: 0; border-radius: 4px; background: transparent;
+  color: #fff; cursor: pointer; text-align: left;
+}
+.music-track-row:hover, .music-track-row.active { background: rgba(var(--hud-rgb), 0.25); }
+.music-track-thumb { width: 28px; height: 16px; flex: 0 0 28px; border-radius: 3px; overflow: hidden; background: #000; }
+.music-track-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.music-track-copy { min-width: 0; flex: 1; }
+.music-track-copy strong { display: block; font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.music-track-index { font-size: 8px; opacity: 0.65; }
+
+#settingsHint {
+  margin-top: 9px; font-size: 11px; font-weight: 600; text-align: center; color: #fff;
+}
+.settings-footer {
+  display: flex; justify-content: space-between; font: 600 8px "Orbitron", sans-serif;
+  color: rgba(255, 255, 255, 0.55); border-top: 1px solid rgba(var(--hud-rgb), 0.2);
+  padding-top: 6px; margin-top: 6px;
+}
+
+/* ===== WRAPPER & STRUKTUR UTAMA CLUSTER CYBER NEON ===== */
+.cluster-wrapper {
+  position: relative;
+  width: 660px;
+  height: 336px;
+  margin: 0 auto;
+}
+
+#cockpit.music-playing .cluster-wrapper {
+  animation: clusterPulse 0.8s ease-in-out infinite alternate;
+}
+
+/* Banner Pop-Up Sambutan "Hello Alonica ✨" */
+.alonica-greeting {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translate(-50%, 12px) scale(0.85);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 18px;
+  background: linear-gradient(135deg, rgba(16, 10, 35, 0.95) 0%, rgba(45, 16, 78, 0.95) 100%);
+  color: #ffffff;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  font: 700 12px "Orbitron", sans-serif;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.7), inset 0 0 10px rgba(var(--hud-rgb), 0.4);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 30;
+  transition: opacity 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.alonica-greeting.show,
+#cockpit.greeting-active .alonica-greeting {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.greeting-sparkle {
+  color: var(--accent);
+  font-size: 13px;
+}
+
+/* ===== HOUSING CLUSTER & SVG BINGKAI POLIGON ===== */
+.cluster-housing {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 14px 26px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+#cockpit.engine-off .cluster-housing {
+  opacity: 0.78;
+  filter: brightness(0.82) saturate(0.85);
+}
+
+.cluster-frame-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.85));
+}
+
+.frame-bg {
+  fill: rgba(7, 4, 16, 0.92);
+  stroke: rgba(var(--hud-rgb), 0.35);
+  stroke-width: 2;
+}
+
+.frame-line-outer {
+  stroke: var(--hud);
+  stroke-width: 2.6;
+  filter: drop-shadow(0 0 8px var(--hud));
+  opacity: 0.88;
+}
+
+.frame-accent {
+  stroke: var(--hud);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 10px var(--hud));
+}
+
+.frame-accent-glow {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 8px var(--accent));
+}
+
+.bottom-bar-poly {
+  fill: rgba(14, 8, 30, 0.9);
+  stroke: var(--hud);
+  stroke-width: 1.8;
+  filter: drop-shadow(0 0 6px rgba(var(--hud-rgb), 0.5));
+}
+
+/* Notifikasi Internal HUD */
+.hud-notice {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  z-index: 40;
+  padding: 6px 16px;
+  border-radius: 8px;
+  background: rgba(12, 6, 28, 0.96);
+  border: 2px solid var(--accent);
+  color: #fff;
+  font: 700 11px "Orbitron", sans-serif;
+  text-align: center;
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.6);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.92);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.hud-notice.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+/* ===== GRID 3 KOLOM UTAMA ===== */
+.cluster-main-grid {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 188px 248px 188px;
+  align-items: center;
+  justify-content: space-between;
+  height: 248px;
+  margin-top: 2px;
+}
+
+.wing {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 226px;
+}
+
+/* ===== SAYAP KIRI ATAS: PANEL GIGI (GEAR) ===== */
+.gear-Wing-panel {
+  position: relative;
+  width: 186px;
+  height: 102px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gear-box-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.gear-poly-bg {
+  fill: rgba(16, 9, 36, 0.85);
+  stroke: rgba(var(--hud-rgb), 0.45);
+  stroke-width: 1.8;
+}
+
+.gear-poly-glow {
+  fill: none;
+  stroke: var(--hud);
+  stroke-width: 3.2;
+  filter: drop-shadow(0 0 8px var(--hud));
+}
+
+.gear-poly-sub {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.8;
+  opacity: 0.75;
+}
+
+.gear-wing-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: -2px;
+}
+
+.gear-main-digit {
+  font: italic 900 54px/0.92 "Orbitron", "Chakra Petch", sans-serif;
+  color: #ffffff;
+  text-shadow:
+    0 0 12px var(--hud),
+    0 0 24px rgba(var(--hud-rgb), 0.85),
+    3px 3px 0 rgba(var(--accent-rgb), 0.55);
+  letter-spacing: 1px;
+  transition: transform 0.15s ease, color 0.2s ease;
+}
+
+.gear-main-label {
+  margin-top: 3px;
+  font: italic 800 12px/1 "Orbitron", sans-serif;
+  letter-spacing: 2px;
+  color: var(--hud-bright);
+  opacity: 0.85;
+  text-shadow: 0 0 8px var(--hud);
+}
+
+/* ===== SUB-GAUGES: RPM (KIRI BAWAH), FUEL (KANAN ATAS), ENGINE (KANAN BAWAH) ===== */
+.sub-gauge-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 112px;
+}
+
+.right-wing .sub-gauge-wrap {
+  justify-content: flex-start;
+}
+
+/* Bar Segmen Melengkung di Samping Sub-Dial (H-C / F-E) */
+.side-arc-bar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 28px;
+  height: 96px;
+  padding: 2px 0;
+}
+
+.arc-lbl {
+  font: italic 800 11px/1 "Orbitron", sans-serif;
+  color: var(--hud-bright);
+  text-shadow: 0 0 6px var(--hud);
+}
+.arc-lbl.top-h { color: var(--accent); }
+.arc-lbl.bot-c { color: var(--cyan); }
+
+.arc-segments {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5px;
+   my: 2px;
+}
+
+.arc-segments .seg {
+  width: 10px;
+  height: 9px;
+  border-radius: 2px;
+  background: rgba(var(--hud-rgb), 0.16);
+  border: 1px solid rgba(var(--hud-rgb), 0.4);
+  transform: skewX(-12deg);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+/* Lengkungan halus mengikuti dial */
+.arc-segments .seg:nth-child(1) { margin-left: 5px; }
+.arc-segments .seg:nth-child(2) { margin-left: 1px; }
+.arc-segments .seg:nth-child(3) { margin-left: -1px; }
+.arc-segments .seg:nth-child(4) { margin-left: 1px; }
+.arc-segments .seg:nth-child(5) { margin-left: 5px; }
+
+.arc-segments .seg.active {
+  background: var(--hud);
+  border-color: var(--hud-bright);
+  box-shadow: 0 0 8px var(--hud);
+}
+
+.arc-segments .seg.active.hot {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.arc-segments .seg.active.cool {
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+.temp-mini-icon {
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: var(--hud-bright);
+  opacity: 0.75;
+}
+
+/* Lingkaran Sub-Dial */
+.sub-dial {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sub-dial-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.sub-ring-outer {
+  fill: rgba(10, 6, 24, 0.9);
+  stroke: rgba(var(--hud-rgb), 0.55);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 8px rgba(var(--hud-rgb), 0.45));
+}
+
+.sub-ring-track {
+  fill: none;
+  stroke: rgba(var(--hud-rgb), 0.18);
+  stroke-width: 5.5;
+  stroke-linecap: round;
+}
+
+.sub-ring-fill {
+  fill: none;
+  stroke: var(--hud);
+  stroke-width: 5.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px var(--hud));
+  transition: stroke-dasharray 0.15s linear, stroke 0.25s ease;
+}
+
+.sub-dial-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1px;
+}
+
+.sub-title {
+  font: 700 10px/1.1 "Orbitron", sans-serif;
+  letter-spacing: 1px;
+  color: var(--hud-bright);
+  opacity: 0.85;
+}
+
+.sub-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--hud);
+  filter: drop-shadow(0 0 6px var(--hud));
+  margin: 1px 0;
+}
+
+.engine-dial-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--hud);
+  opacity: 0.5;
+  transition: opacity 0.2s, color 0.2s, filter 0.2s;
+}
+.engine-dial-icon.active {
+  opacity: 1;
+  color: var(--hud-bright);
+  filter: drop-shadow(0 0 8px var(--hud));
+}
+.engine-dial-icon.danger {
+  color: var(--danger) !important;
+  opacity: 1 !important;
+  animation: dangerPulse 0.6s infinite alternate;
+}
+
+.sub-val {
+  font: 800 16px/1.05 "Orbitron", sans-serif;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(var(--hud-rgb), 0.85);
+}
+
+.sub-sublabel {
+  font: 700 8.5px/1 "Orbitron", sans-serif;
+  color: var(--hud-bright);
+  opacity: 0.75;
+}
+
+/* Peringatan Kritis pada Sub-Dial */
+#cockpit.redline #rpmRingFill {
+  stroke: var(--danger);
+  filter: drop-shadow(0 0 10px var(--danger));
+}
+#cockpit.redline #rpmTextValue {
+  color: #ff8096;
+  animation: dangerPulse 0.35s infinite alternate;
+}
+
+#cockpit.fuel-critical #fuelRingFill {
+  stroke: var(--danger);
+}
+#cockpit.fuel-critical #fuelValue {
+  color: var(--danger);
+  animation: dangerPulse 0.5s infinite alternate;
+}
+
+#cockpit.health-critical #healthRingFill {
+  stroke: var(--danger);
+}
+#cockpit.health-critical #healthValue {
+  color: var(--danger);
+  animation: dangerPulse 0.5s infinite alternate;
+}
+
+/* ===== TENGAH: PENCATAT SPEED UTAMA (MAIN SPEEDOMETER DIAL) ===== */
+.center-speedo-zone {
+  position: relative;
+  width: 248px;
+  height: 248px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-crest-btn {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(20, 10, 42, 0.9);
+  border: 1.5px solid var(--hud);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 12;
+  box-shadow: 0 0 10px rgba(var(--hud-rgb), 0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.center-crest-btn:hover {
+  transform: translateX(-50%) scale(1.12);
+  box-shadow: 0 0 14px var(--accent);
+}
+.cluster-logo {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+}
+.crest-glow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+
+.main-speedo-dial {
+  position: relative;
+  width: 248px;
+  height: 248px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.speedo-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.speedo-bezel-outer {
+  fill: rgba(7, 4, 18, 0.96);
+  stroke: var(--hud);
+  stroke-width: 3.5;
+  filter: drop-shadow(0 0 14px rgba(var(--hud-rgb), 0.75));
+}
+
+.speedo-bezel-mid {
+  fill: none;
+  stroke: rgba(var(--hud-rgb), 0.35);
+  stroke-width: 1.5;
+}
+
+.speedo-core-ring {
+  fill: rgba(12, 6, 28, 0.92);
+  stroke: rgba(var(--hud-rgb), 0.45);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 12px rgba(var(--hud-rgb), 0.4));
+}
+
+.speedo-arc-track {
+  fill: none;
+  stroke: rgba(var(--hud-rgb), 0.16);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+.speedo-arc-redzone {
+  fill: none;
+  stroke: rgba(255, 23, 68, 0.45);
+  stroke-width: 7;
+  stroke-linecap: butt;
+}
+
+.speedo-arc-fill {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.1s linear;
+}
+
+/* Tick Marks & Angka Skala Speedometer */
+.speedo-tick {
+  stroke: rgba(233, 213, 255, 0.55);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.speedo-tick.major {
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 4px var(--hud));
+}
+.speedo-tick.redzone {
+  stroke: #ff2a6d;
+  filter: drop-shadow(0 0 5px #ff1744);
+}
+
+.speedo-scale-num {
+  fill: #f3e8ff;
+  font: italic 800 11.5px "Orbitron", sans-serif;
+  text-anchor: middle;
+  dominant-baseline: central;
+  filter: drop-shadow(0 0 4px rgba(var(--hud-rgb), 0.8));
+}
+.speedo-scale-num.redzone {
+  fill: #ff4d79;
+  filter: drop-shadow(0 0 6px #ff1744);
+}
+
+/* Jarum Speedometer Neon */
+.speed-needle-group {
+  transition: transform 0.09s linear;
+}
+.needle-glow {
+  fill: var(--accent);
+  opacity: 0.7;
+  filter: drop-shadow(0 0 10px var(--accent)) drop-shadow(0 0 18px #ff1744);
+}
+.needle-core {
+  fill: #ffffff;
+}
+.needle-cap {
+  fill: #190d33;
+  stroke: var(--accent);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 8px var(--accent));
+}
+
+/* Layar Digital Kecepatan di Tengah Dial */
+.speedo-center-readout {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 144px;
+  pointer-events: none;
+}
+
+.speedo-top-caption {
+  font: italic 700 7.5px/1.15 "Orbitron", sans-serif;
+  letter-spacing: 0.8px;
+  color: var(--hud-bright);
+  opacity: 0.85;
+  margin-bottom: 3px;
+}
+
+.speed-main-digits {
+  font: italic 900 44px/0.96 "Orbitron", sans-serif;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+  text-shadow:
+    0 0 12px var(--hud),
+    0 0 26px rgba(var(--hud-rgb), 0.9);
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.speed-unit-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 3px;
+}
+
+#speedUnit {
+  font: italic 800 12px/1 "Orbitron", sans-serif;
+  color: var(--hud);
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(var(--hud-rgb), 0.8);
+}
+
+.extreme-badge {
+  display: none;
+  padding: 1px 5px;
+  background: var(--danger);
+  color: #fff;
+  border-radius: 4px;
+  font: 800 8px "Orbitron", sans-serif;
+  box-shadow: 0 0 8px var(--danger);
+}
+#cockpit.extreme-speed .extreme-badge { display: inline-block; }
+#cockpit.overspeed .speed-main-digits {
+  color: #ffd1e6;
+  text-shadow: 0 0 14px var(--accent), 0 0 28px var(--danger);
+}
+
+.speedo-bot-caption {
+  margin-top: 5px;
+  font: 700 7.5px/1 "Orbitron", sans-serif;
+  letter-spacing: 1px;
+  color: var(--hud-bright);
+  opacity: 0.72;
+}
+
+/* ===== BAR STATUS BAWAH (SEATBELT, LOCK, SEIN, HEADLIGHTS, JAM & ODO) ===== */
+.cluster-bottom-bar {
+  position: relative;
+  z-index: 4;
+  width: 82%;
+  height: 38px;
+  margin: 0 auto 2px;
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.bottom-left-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+}
+
+.slash-accents {
+  display: flex;
+  gap: 4px;
+}
+.slash-accents span {
+  width: 3px;
+  height: 12px;
+  background: rgba(var(--hud-rgb), 0.45);
+  transform: skewX(-24deg);
+  border-radius: 1px;
+}
+
+.belt-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--hud-bright);
+  opacity: 0.38;
+  transition: opacity 0.2s, color 0.2s, filter 0.2s;
+}
+.belt-pill svg {
+  width: 18px;
+  height: 18px;
+}
+.belt-pill .status-txt {
+  font: 700 9px "Orbitron", sans-serif;
+  letter-spacing: 0.8px;
+}
+.belt-pill.active.danger {
+  opacity: 1;
+  color: var(--accent);
+  filter: drop-shadow(0 0 8px var(--accent));
+  animation: dangerPulse 0.65s infinite alternate;
+}
+
+.lock-pill {
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  opacity: 0.35;
+  transition: opacity 0.2s, color 0.2s, filter 0.2s;
+}
+.lock-pill svg { width: 100%; height: 100%; }
+#doorLockIcon.locked {
+  opacity: 1;
+  color: #35f277;
+  filter: drop-shadow(0 0 6px #35f277);
+}
+#doorLockIcon.lock-snap {
+  animation: lockSnap 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Lampu Sein & Headlight di Tengah Bawah */
+.bottom-center-signals {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-self: center;
+}
+
+.turn-arrow {
+  width: 20px;
+  height: 20px;
+  color: var(--hud);
+  opacity: 0.28;
+  transition: opacity 0.15s, color 0.15s, filter 0.15s, transform 0.15s;
+}
+.turn-arrow svg { width: 100%; height: 100%; }
+.turn-arrow.active {
+  opacity: 1;
+  color: #c084fc;
+  filter: drop-shadow(0 0 8px var(--hud)) drop-shadow(0 0 14px var(--accent));
+  animation: signalBlink 0.45s ease-in-out infinite alternate;
+}
+
+.beam-icon {
+  width: 19px;
+  height: 19px;
+  color: var(--hud-bright);
+  opacity: 0.3;
+  transition: opacity 0.2s, color 0.2s, filter 0.2s;
+}
+.beam-icon svg { width: 100%; height: 100%; }
+#headlightIndicator.low-beam {
+  opacity: 1;
+  color: #38f27f;
+  filter: drop-shadow(0 0 7px #38f27f);
+}
+#headlightIndicator.high-beam {
+  opacity: 1;
+  color: #38bdf8;
+  filter: drop-shadow(0 0 9px #38bdf8);
+}
+
+/* Jam & Odometer di Kanan Bawah */
+.bottom-right-odo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-self: end;
+  line-height: 1.1;
+}
+
+.cluster-clock {
+  font: italic 700 11px "Orbitron", sans-serif;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px var(--hud);
+}
+
+.odo-readout {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 1px;
+}
+
+.odo-lbl {
+  font: 700 8.5px "Orbitron", sans-serif;
+  color: var(--hud);
+}
+
+#odometerValue {
+  font: 700 11px "Orbitron", sans-serif;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+.odo-unit {
+  font: italic 700 8.5px "Orbitron", sans-serif;
+  color: var(--hud-bright);
+  opacity: 0.8;
+}
+
+/* Banner Overspeed (>= 60 MPH) */
+#alarmBanner {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 14px;
+  border: 1.5px solid var(--danger);
+  border-radius: 999px;
+  background: rgba(28, 6, 18, 0.92);
+  color: #fff;
+  font: 800 9.5px "Orbitron", sans-serif;
+  letter-spacing: 1px;
+  box-shadow: 0 0 14px rgba(255, 23, 68, 0.7);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 25;
+}
+#cockpit.overspeed #alarmBanner {
+  opacity: 1;
+  visibility: visible;
+  animation: dangerPulse 0.45s infinite alternate;
+}
+
+/* Getaran Halus saat Kecepatan Ekstrem / Health Kritis */
+#cockpit.extreme-speed .cluster-housing,
+#cockpit.health-critical .cluster-housing {
+  animation: clusterShake 0.09s infinite;
+}
+
+/* ===== KEYFRAMES ANIMASI ===== */
+@keyframes boot {
+  from { opacity: 0; transform: translate(var(--tx, 0px), calc(var(--ty, 0px) + 16px)) scale(calc(var(--scale, 1) * 0.94)); }
+  to { opacity: 1; transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--scale, 1)); }
+}
+@keyframes clusterPulse {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-2px); }
+}
+@keyframes signalBlink {
+  from { transform: scale(0.95); opacity: 0.65; }
+  to { transform: scale(1.08); opacity: 1; }
+}
+@keyframes dangerPulse {
+  from { opacity: 1; }
+  to { opacity: 0.38; }
+}
+@keyframes eqBounce {
+  0% { height: 3px; }
+  100% { height: 13px; }
+}
+@keyframes eqBounceMini {
+  0% { height: 3px; }
+  100% { height: 11px; }
+}
+@keyframes lockSnap {
+  0% { transform: scale(0.85); }
+  55% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+@keyframes clusterShake {
+  0% { transform: translate(-0.8px, 0.6px); }
+  50% { transform: translate(0.8px, -0.6px); }
+  100% { transform: translate(-0.6px, -0.8px); }
+}

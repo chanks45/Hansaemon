@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBER NEON | Sport Cluster HUD</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Orbitron:ital,wght@0,600;0,700;0,800;0,900;1,800;1,900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main id="cockpit" class="theme-white engine-off hp-high" aria-label="Vehicle HUD">
+
+    <!-- FLOATING MINI AUDIO PILL DI ATAS CLUSTER -->
+    <div id="mini-music-pill" class="mini-music-pill no-drag" aria-label="Mini Audio Controller">
+      <div class="mini-pill-left">
+        <span id="miniSourceBadge" class="mini-source-badge">📻 RADIO</span>
+        <div id="miniEq" class="mini-eq" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <div class="mini-track-wrap" title="Sedang Diputar">
+        <div id="miniTrackTitle" class="mini-track-title">Delta FM</div>
+      </div>
+
+      <div class="mini-pill-controls">
+        <button id="btn-mini-prev" class="mini-ctrl-btn" type="button" title="Sebelumnya">⏮</button>
+        <button id="btn-mini-play" class="mini-ctrl-btn mini-play-toggle" type="button" title="Play / Pause">▶</button>
+        <button id="btn-mini-next" class="mini-ctrl-btn" type="button" title="Berikutnya">⏭</button>
+        <button id="btn-mini-open" class="mini-ctrl-btn mini-panel-btn" type="button" title="Buka Panel Musik">🎵</button>
+        <button id="btn-mini-close" class="mini-ctrl-btn mini-close-btn" type="button" title="Sembunyikan Mini Player">×</button>
+      </div>
+    </div>
+
+    <!-- PENGATURAN HUD & DUAL-MODE MUSIC PLAYER -->
+    <div id="settingsMenu">
+      <div class="settings-heading">
+        <span class="settings-dot"></span>
+        <span>CYBER CLUSTER CONFIG</span>
+        <button id="closeSettings" class="icon-button" type="button" aria-label="Tutup pengaturan">×</button>
+      </div>
+
+      <div class="menu-btns">
+        <button type="button" data-act="resize">Resize</button>
+        <button type="button" data-act="move">Pindah</button>
+        <button type="button" data-act="reset">Reset</button>
+        <button type="button" data-act="theme">Theme</button>
+      </div>
+
+      <!-- PANEL DUAL-MODE AUDIO (RADIO FM & YOUTUBE) -->
+      <section id="music-panel" class="music-panel no-drag" aria-label="Dual Mode Audio Player">
+        <div class="audio-tabs" role="tablist">
+          <button id="tabBtnRadio" class="audio-tab active" type="button" data-tab="radio" role="tab" aria-selected="true">
+            📻 Radio FM
+          </button>
+          <button id="tabBtnYoutube" class="audio-tab" type="button" data-tab="youtube" role="tab" aria-selected="false">
+            ▶ YouTube
+          </button>
+        </div>
+
+        <!-- TAB 1: LIVE RADIO FM STREAMING -->
+        <div id="tabContentRadio" class="audio-tab-pane active" role="tabpanel">
+          <div class="radio-display">
+            <div class="radio-badge">LIVE FM</div>
+            <div class="radio-meta">
+              <div id="stationName" class="radio-station-name">Delta FM</div>
+              <div id="radioStatus" class="radio-status-text">Stopped</div>
+            </div>
+            <div class="radio-eq" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <div class="radio-select-wrap">
+            <select id="stationSelect" class="radio-select" aria-label="Pilih Stasiun Radio"></select>
+          </div>
+
+          <div class="music-main-controls">
+            <button id="btn-radio-prev" class="music-control-btn" type="button" title="Stasiun Sebelumnya">⏮</button>
+            <button id="btn-radio-play" class="music-play-btn" type="button" title="Play / Pause Radio">▶</button>
+            <button id="btn-radio-next" class="music-control-btn" type="button" title="Stasiun Berikutnya">⏭</button>
+          </div>
+
+          <div class="music-volume-row">
+            <button id="btn-radio-mute" class="music-icon-btn" type="button" title="Mute Radio">🔊</button>
+            <input id="radio-volume" class="music-range" type="range" min="0" max="100" value="80" step="1" aria-label="Radio Volume">
+            <span id="radio-volume-label" class="volume-pct">80%</span>
+            <button id="btn-radio-add-toggle" class="music-small-btn music-add-toggle" type="button" title="Tambah saluran radio via link">＋</button>
+          </div>
+
+          <div id="radio-add-row" class="music-add-row hide">
+            <input id="radio-url-input" type="text" placeholder="Link Stream Radio (http/https)" autocomplete="off">
+            <input id="radio-title-input" type="text" placeholder="Nama Radio (opsional)" autocomplete="off">
+            <button id="btn-radio-add" class="music-small-btn music-add-primary" type="button" title="Simpan & Putar">▶</button>
+          </div>
+
+          <div class="music-playlist-head">
+            <span>Saluran Radio</span>
+            <button id="btn-radio-clear" class="music-text-btn" type="button" title="Hapus semua radio tambahan">↺</button>
+          </div>
+          <div id="radio-playlist" class="music-playlist" role="list"></div>
+        </div>
+
+        <!-- TAB 2: YOUTUBE LINK & PLAYLIST -->
+        <div id="tabContentYoutube" class="audio-tab-pane" role="tabpanel">
+          <div class="music-now-playing">
+            <div class="music-video-wrap">
+              <div id="youtube-player"></div>
+              <img id="music-cover" class="music-cover" alt="" aria-hidden="true">
+              <div id="music-player-placeholder" class="music-placeholder">
+                <span class="music-placeholder-note" aria-label="Music">♪</span>
+              </div>
+            </div>
+            <div class="music-track-meta">
+              <div id="music-track-title">Belum ada lagu</div>
+              <div id="music-track-subtitle">Online playback</div>
+            </div>
+          </div>
+
+          <div class="music-progress-row">
+            <span id="music-current-time">0:00</span>
+            <input id="music-progress" class="music-range" type="range" min="0" max="1000" value="0" step="1" aria-label="Song progress">
+            <span id="music-duration">0:00</span>
+          </div>
+
+          <div class="music-main-controls">
+            <button id="btn-music-prev" class="music-control-btn" type="button" title="Previous">⏮</button>
+            <button id="btn-music-play" class="music-play-btn" type="button" title="Play / Pause">▶</button>
+            <button id="btn-music-next" class="music-control-btn" type="button" title="Next">⏭</button>
+          </div>
+
+          <div class="music-volume-row">
+            <button id="btn-music-mute" class="music-icon-btn" type="button" title="Mute">🔊</button>
+            <input id="music-volume" class="music-range" type="range" min="0" max="100" value="80" step="1" aria-label="Volume">
+            <button id="btn-music-add-toggle" class="music-small-btn music-add-toggle" type="button" title="Tambah lagu">＋</button>
+          </div>
+
+          <div id="music-add-row" class="music-add-row hide">
+            <input id="music-url-input" type="text" placeholder="Link YouTube / ID Video" autocomplete="off">
+            <input id="music-title-input" type="text" placeholder="Nama lagu (opsional)" autocomplete="off">
+            <button id="btn-music-add" class="music-small-btn music-add-primary" type="button">▶</button>
+          </div>
+
+          <div class="music-tools-row">
+            <button id="btn-music-repeat" class="music-tool-btn" type="button" title="Ulangi lagu">↻</button>
+            <button id="btn-music-shuffle" class="music-tool-btn" type="button" title="Putar acak">⤨</button>
+          </div>
+
+          <div class="music-playlist-head">
+            <span>Playlist</span>
+            <button id="btn-music-clear" class="music-text-btn" type="button" title="Kosongkan playlist">×</button>
+          </div>
+          <div id="music-playlist" class="music-playlist" role="list">
+            <div class="music-empty">Playlist kosong. Tekan + untuk menambah lagu.</div>
+          </div>
+        </div>
+      </section>
+
+      <div id="settingsHint">Klik kanan untuk menutup menu</div>
+      <div class="settings-footer">
+        <span>CYBER CLUSTER OS</span>
+        <span>NEON SPORT EDITION</span>
+      </div>
+    </div>
+
+    <!-- WRAPPER UTAMA CLUSTER CYBER NEON -->
+    <div class="cluster-wrapper">
+
+      <!-- BANNER POP-UP SAMBUTAN "Hello Alonica" -->
+      <div id="alonicaGreeting" class="alonica-greeting" role="status" aria-live="polite">
+        <span class="greeting-sparkle">⚡</span>
+        <span class="greeting-text">Hello Alonica ✨</span>
+        <span class="greeting-sparkle">⚡</span>
+      </div>
+
+      <!-- BODI UTAMA CLUSTER -->
+      <div class="hud-card cluster-housing">
+        <div id="hudNotice" class="hud-notice" role="status" aria-live="polite"></div>
+
+        <!-- SVG DEKORASI BINGKAI POLIGON FUTURISTIK -->
+        <svg class="cluster-frame-svg" viewBox="0 0 680 340" fill="none" aria-hidden="true">
+          <!-- Siluet Luar Dashboard -->
+          <path class="frame-bg" d="M 48 56 L 210 38 C 260 12, 420 12, 470 38 L 632 56 L 672 155 L 638 268 L 578 324 L 102 324 L 42 268 L 8 155 Z" />
+          <!-- Garis Neon Luar -->
+          <path class="frame-line-outer" d="M 52 60 L 212 42 C 262 16, 418 16, 468 42 L 628 60 L 664 155 L 632 264 L 574 318 L 106 318 L 48 264 L 16 155 Z" />
+          <!-- Aksen Sudut Kiri & Kanan -->
+          <path class="frame-accent" d="M 28 135 L 55 72 L 195 58" />
+          <path class="frame-accent" d="M 652 135 L 625 72 L 485 58" />
+          <path class="frame-accent-glow" d="M 70 258 L 220 258" />
+          <path class="frame-accent-glow" d="M 460 258 L 610 258" />
+          <!-- Garis Panel Bawah -->
+          <polygon class="bottom-bar-poly" points="108,270 572,270 596,312 84,312" />
+        </svg>
+
+        <!-- GRID 3 KOLOM UTAMA (KIRI: GEAR & RPM | TENGAH: SPEEDOMETER | KANAN: FUEL & ENGINE) -->
+        <div class="cluster-main-grid">
+
+          <!-- ================= SAYAP KIRI: GEAR (ATAS) & RPM (BAWAH) ================= -->
+          <div class="wing left-wing">
+            <!-- Panel Atas: GIGI / GEAR -->
+            <div class="gear-Wing-panel" title="Current Gear">
+              <svg class="gear-box-svg" viewBox="0 0 210 105" preserveAspectRatio="none" aria-hidden="true">
+                <polygon class="gear-poly-bg" points="28,10 202,4 188,92 8,98" />
+                <polyline class="gear-poly-glow" points="12,86 30,14 196,8" />
+                <polyline class="gear-poly-sub" points="35,95 185,90 198,24" />
+              </svg>
+              <div class="gear-wing-content">
+                <div id="gearValue" class="gear-main-digit">N</div>
+                <div class="gear-main-label">GEAR</div>
+              </div>
+            </div>
+
+            <!-- Panel Bawah: RPM GAUGE & BAR SUHU/BEBAN -->
+            <div class="sub-gauge-wrap rpm-gauge-wrap" title="Engine RPM">
+              <!-- Bar Vertikal Melengkung H - C di Kiri RPM -->
+              <div class="side-arc-bar left-arc">
+                <span class="arc-lbl top-h">H</span>
+                <div id="rpmSideSegments" class="arc-segments">
+                  <span class="seg" data-idx="5"></span>
+                  <span class="seg" data-idx="4"></span>
+                  <span class="seg" data-idx="3"></span>
+                  <span class="seg" data-idx="2"></span>
+                  <span class="seg" data-idx="1"></span>
+                </div>
+                <span class="arc-lbl bot-c">C</span>
+                <svg class="temp-mini-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3a2 2 0 0 0-2 2v8.2a4 4 0 1 0 4 0V5a2 2 0 0 0-2-2zm-6 16c1.5 0 2-1 3.5-1s2 1 3.5 1 2-1 3.5-1 2 1 3.5 1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+
+              <!-- Dial Bulat RPM -->
+              <div class="sub-dial rpm-dial">
+                <svg class="sub-dial-svg" viewBox="0 0 120 120" aria-hidden="true">
+                  <circle class="sub-ring-outer" cx="60" cy="60" r="54" />
+                  <circle class="sub-ring-track" cx="60" cy="60" r="46" stroke-dasharray="220 300" stroke-dashoffset="0" transform="rotate(135 60 60)" />
+                  <circle id="rpmRingFill" class="sub-ring-fill" cx="60" cy="60" r="46" stroke-dasharray="0 300" stroke-dashoffset="0" transform="rotate(135 60 60)" />
+                </svg>
+                <!-- Fallback kompatibilitas bar untuk script -->
+                <div id="rpmFill" class="hidden-compat"></div>
+
+                <div class="sub-dial-inner">
+                  <span class="sub-title">RPM</span>
+                  <svg class="sub-icon rpm-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 17a8 8 0 1 1 16 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                    <path d="M12 17l4.5-5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                    <circle cx="12" cy="17" r="2" fill="currentColor"/>
+                  </svg>
+                  <b id="rpmTextValue" class="sub-val">0</b>
+                  <span class="sub-sublabel">RPM</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= TENGAH: PENCATAT SPEED UTAMA (MAIN SPEEDOMETER) ================= -->
+          <div class="center-speedo-zone">
+            <!-- Tombol tersembunyi/interaktif di bagian atas ring tengah untuk sapaan "Hello Alonica" -->
+            <div id="kittyBow" class="center-crest-btn no-drag" role="button" tabindex="0" title="Klik untuk sapaan Hello Alonica!">
+              <img id="clusterLogo" src="logo.png" alt="" class="cluster-logo" onerror="this.style.display='none'">
+              <span class="crest-glow-dot"></span>
+            </div>
+
+            <div class="main-speedo-dial">
+              <svg class="speedo-svg" viewBox="0 0 280 280" aria-hidden="true">
+                <defs>
+                  <linearGradient id="speedArcGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="var(--hud)" />
+                    <stop offset="65%" stop-color="var(--accent)" />
+                    <stop offset="100%" stop-color="#ff1744" />
+                  </linearGradient>
+                  <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3.5" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+
+                <!-- Lingkaran Bezel Luar & Dalam -->
+                <circle class="speedo-bezel-outer" cx="140" cy="140" r="134" />
+                <circle class="speedo-bezel-mid" cx="140" cy="140" r="126" />
+                <circle class="speedo-core-ring" cx="140" cy="140" r="76" />
+
+                <!-- Busur Track & Busur Progress Kecepatan (240 Derajat, Keliling r=114 -> ~477.5) -->
+                <circle class="speedo-arc-track" cx="140" cy="140" r="114"
+                        stroke-dasharray="477.5 800" transform="rotate(150 140 140)" />
+                <circle class="speedo-arc-redzone" cx="140" cy="140" r="114"
+                        stroke-dasharray="85 800" stroke-dashoffset="-392.5" transform="rotate(150 140 140)" />
+                <circle id="speedArcFill" class="speedo-arc-fill" cx="140" cy="140" r="114"
+                        stroke="url(#speedArcGrad)" stroke-dasharray="0 800" transform="rotate(150 140 140)" filter="url(#neonGlow)" />
+
+                <!-- Grup Tick Marks & Angka 0 - 280 (Digenerate presisi via JS) -->
+                <g id="speedoTicksGroup"></g>
+                <g id="speedoNumsGroup"></g>
+
+                <!-- Jarum Speedometer Neon (Berputar dari -120deg s/d +120deg) -->
+                <g id="speedNeedleGroup" class="speed-needle-group" transform="rotate(-120 140 140)">
+                  <polygon class="needle-glow" points="140,26 135,140 145,140" />
+                  <polygon class="needle-core" points="140,30 137.5,140 142.5,140" />
+                  <circle class="needle-cap" cx="140" cy="140" r="11" />
+                </g>
+              </svg>
+
+              <!-- Tampilan Digital Kecepatan di Tengah Dial -->
+              <div class="speedo-center-readout">
+                <div class="speedo-top-caption">PENCATAT<br>SPEED UTAMA</div>
+                <div id="speedValue" class="speed-main-digits">000</div>
+                <div class="speed-unit-row">
+                  <span id="speedUnit">KM/H</span>
+                  <span id="extremeBadge" class="extreme-badge">MAX!</span>
+                </div>
+                <div class="speedo-bot-caption">SPEEDOMETER</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= SAYAP KANAN: FUEL (ATAS) & ENGINE HEALTH (BAWAH) ================= -->
+          <div class="wing right-wing">
+            <!-- Panel Atas: FUEL GAUGE -->
+            <div class="sub-gauge-wrap fuel-gauge-wrap" title="Fuel Level">
+              <div class="side-arc-bar right-arc">
+                <span class="arc-lbl top-f">F</span>
+                <div id="fuelSideSegments" class="arc-segments">
+                  <span class="seg active" data-idx="5"></span>
+                  <span class="seg active" data-idx="4"></span>
+                  <span class="seg active" data-idx="3"></span>
+                  <span class="seg active" data-idx="2"></span>
+                  <span class="seg active" data-idx="1"></span>
+                </div>
+                <span class="arc-lbl bot-e">E</span>
+              </div>
+
+              <div class="sub-dial fuel-dial">
+                <svg class="sub-dial-svg" viewBox="0 0 120 120" aria-hidden="true">
+                  <circle class="sub-ring-outer" cx="60" cy="60" r="54" />
+                  <circle class="sub-ring-track" cx="60" cy="60" r="46" stroke-dasharray="220 300" transform="rotate(135 60 60)" />
+                  <circle id="fuelRingFill" class="sub-ring-fill" cx="60" cy="60" r="46" stroke-dasharray="220 300" transform="rotate(135 60 60)" />
+                </svg>
+                <div class="sub-dial-inner">
+                  <svg class="sub-icon fuel-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 4h8v16H6zM14 9h2.5a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0V8l-3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                    <rect x="8" y="6.5" width="4" height="3.5" fill="currentColor"/>
+                  </svg>
+                  <span class="sub-title">FUEL</span>
+                  <b id="fuelValue" class="sub-val">100%</b>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel Bawah: ENGINE / HEALTH GAUGE -->
+            <div class="sub-gauge-wrap engine-gauge-wrap" title="Engine Health">
+              <div class="side-arc-bar right-arc">
+                <span class="arc-lbl top-h">H</span>
+                <div id="healthSideSegments" class="arc-segments">
+                  <span class="seg active" data-idx="5"></span>
+                  <span class="seg active" data-idx="4"></span>
+                  <span class="seg active" data-idx="3"></span>
+                  <span class="seg active" data-idx="2"></span>
+                  <span class="seg active" data-idx="1"></span>
+                </div>
+                <span class="arc-lbl bot-c">C</span>
+              </div>
+
+              <div class="sub-dial engine-dial">
+                <svg class="sub-dial-svg" viewBox="0 0 120 120" aria-hidden="true">
+                  <circle class="sub-ring-outer" cx="60" cy="60" r="54" />
+                  <circle class="sub-ring-track" cx="60" cy="60" r="46" stroke-dasharray="220 300" transform="rotate(135 60 60)" />
+                  <circle id="healthRingFill" class="sub-ring-fill" cx="60" cy="60" r="46" stroke-dasharray="220 300" transform="rotate(135 60 60)" />
+                </svg>
+                <div class="sub-dial-inner">
+                  <div id="engineCheck" class="vehicle-indicator engine-dial-icon" title="Engine Status">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 9h3l2-3h6l2 3h3v9h-3l-2 2H8l-2-2H4zM9 6V3h5v3M8 12h3m2 0h3" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <span class="sub-title">ENGINE</span>
+                  <b id="healthValue" class="sub-val">100%</b>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= BAR STATUS BAWAH (SEATBELT, LOCK, SEIN, HEADLIGHTS, JAM & ODO) ================= -->
+        <div class="cluster-bottom-bar">
+          <!-- Kiri: Seatbelt & Door Lock -->
+          <div class="bottom-left-status">
+            <div class="slash-accents" aria-hidden="true"><span></span><span></span><span></span></div>
+
+            <div id="seatbeltIndicator" class="vehicle-indicator belt-pill" title="Seatbelt">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="5.5" r="2.6" fill="currentColor"/>
+                <path d="M8 10.5c0-1.2 1.8-2 4-2s4 .8 4 2v5.5H8v-5.5z" fill="currentColor" opacity="0.45"/>
+                <path d="M6.5 8.5l11 9.5M8 19h8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+              </svg>
+              <span class="status-txt">SEATBELT</span>
+            </div>
+
+            <div id="doorLockIcon" class="vehicle-indicator unlocked lock-pill" title="Doors: Unlocked">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path id="lockShackle" d="M7 11V7a5 5 0 0 1 9.9-1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                <rect x="5" y="11" width="14" height="10" rx="2.4" fill="none" stroke="currentColor" stroke-width="2.2" />
+                <circle cx="12" cy="15.5" r="1.3" fill="currentColor" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Tengah: Lampu Sein Kiri/Kanan & Headlights -->
+          <div class="bottom-center-signals">
+            <div id="leftIndicator" class="turn-arrow left" title="Sein Kiri">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14 5l-8 7 8 7v-4.5h6v-5h-6V5z" fill="currentColor"/>
+              </svg>
+            </div>
+
+            <div id="rightIndicator" class="turn-arrow right" title="Sein Kanan">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M10 5l8 7-8 7v-4.5H4v-5h6V5z" fill="currentColor"/>
+              </svg>
+            </div>
+
+            <div id="headlightIndicator" class="vehicle-indicator beam-icon" title="Headlights">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 7h5a5 5 0 0 1 0 10H4zM13 8h7M13 12h8M13 16h7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Kanan: Jam & Odometer -->
+          <div class="bottom-right-odo">
+            <div id="clockDisplay" class="cluster-clock">12:59</div>
+            <div class="odo-readout" title="Odometer">
+              <span class="odo-lbl">ODO</span>
+              <b id="odometerValue">000000</b>
+              <span id="odoUnit" class="odo-unit">km</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Container kompatibilitas tersembunyi -->
+        <div id="heartCharms" class="hidden-compat" aria-hidden="true"></div>
+
+      </div>
+    </div>
+
+    <!-- INDIKATOR VISUAL OVERSPEED -->
+    <div id="alarmBanner" role="status" aria-live="polite">
+      <span class="alarm-symbol">⚡</span>
+      <span>OVERSPEED! 60+ MPH</span>
+    </div>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
