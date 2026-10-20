@@ -10,9 +10,7 @@
   var STORAGE_KEY = 'speedoHudLayout';
   var SPEED_LIMIT_MPH = 60;   // Batas overspeed 60 MPH (~97 KM/H)
   var EXTREME_SPEED_MPH = 85; // Batas kecepatan ekstrem (>= 85 MPH)
-  var MAX_DIAL_SPEED = 280;   // Skala maksimum dial tengah (0 - 280)
-  var SUB_RING_ARC = 212;     // Panjang busur 270deg untuk r=45
-  var THEMES = ['theme-white', 'theme-pink', 'theme-yellow'];
+  var THEMES = ['theme-violet', 'theme-magenta', 'theme-cyan'];
 
   /* ================= DAFTAR 9 STASIUN RADIO FM BAWAAN ================= */
   var RADIO_STORAGE_KEY = 'samc_radio_custom_stations_v1';
@@ -54,6 +52,7 @@
   var prevLockedState = null;
   var popTimer = null;
   var lockSnapTimer = null;
+  var greetingTimer = null;
 
   var elements = {
     engine: $('engine'),
@@ -98,72 +97,6 @@
       .replaceAll('"', '&quot;')
       .replaceAll("'", '&#039;');
   }
-
-  /* ================= GENERATE SKALA DIAL SPEEDOMETER UTAMA (0 - 280) ================= */
-  function buildSpeedometerScale() {
-    var ticksGroup = $('speedoTicksGroup');
-    var numsGroup = $('speedoNumsGroup');
-    if (!ticksGroup || !numsGroup) return;
-
-    ticksGroup.innerHTML = '';
-    numsGroup.innerHTML = '';
-
-    var ns = 'http://www.w3.org/2000/svg';
-    var cx = 140, cy = 140;
-    var startAngle = -210; // Posisi angka 0 (kiri bawah)
-    var endAngle = 30;     // Posisi angka 280 (kanan bawah), rentang 240 derajat
-    var totalRange = endAngle - startAngle;
-
-    for (var val = 0; val <= MAX_DIAL_SPEED; val += 5) {
-      var ratio = val / MAX_DIAL_SPEED;
-      var deg = startAngle + ratio * totalRange;
-      var rad = (deg * Math.PI) / 180;
-
-      var isMajor = (val % 20 === 0);
-      var isMedium = (val % 10 === 0 && !isMajor);
-      var isRedzone = (val >= 220);
-
-      var rOuter = 110;
-      var rInner = isMajor ? 99 : (isMedium ? 103 : 106);
-
-      var x1 = cx + rOuter * Math.cos(rad);
-      var y1 = cy + rOuter * Math.sin(rad);
-      var x2 = cx + rInner * Math.cos(rad);
-      var y2 = cy + rInner * Math.sin(rad);
-
-      var line = document.createElementNS(ns, 'line');
-      line.setAttribute('x1', x1.toFixed(2));
-      line.setAttribute('y1', y1.toFixed(2));
-      line.setAttribute('x2', x2.toFixed(2));
-      line.setAttribute('y2', y2.toFixed(2));
-      line.setAttribute('class', 'speedo-tick' + (isMajor ? ' major' : '') + (isRedzone ? ' redzone' : ''));
-      ticksGroup.appendChild(line);
-
-      if (isMajor) {
-        var rText = 86;
-        var tx = cx + rText * Math.cos(rad);
-        var ty = cy + rText * Math.sin(rad);
-
-        var txt = document.createElementNS(ns, 'text');
-        txt.setAttribute('x', tx.toFixed(2));
-        txt.setAttribute('y', ty.toFixed(2));
-        txt.setAttribute('class', 'speedo-scale-num' + (isRedzone ? ' redzone' : ''));
-        txt.textContent = String(val);
-        numsGroup.appendChild(txt);
-      }
-    }
-  }
-
-  /* ================= JAM DIGITAL REAL-TIME ================= */
-  function updateClusterClock() {
-    var el = $('clockDisplay');
-    if (!el) return;
-    var now = new Date();
-    var hh = String(now.getHours()).padStart(2, '0');
-    var mm = String(now.getMinutes()).padStart(2, '0');
-    el.textContent = hh + ':' + mm;
-  }
-
   /* ================= CHIME SEATBELT LEMBUT (MARIMBA D5 - A5) ================= */
   var audioCtx = null;
   var beltBeepTimer = null;
@@ -1184,86 +1117,239 @@
     if (musicPlaylist.length) ensureYouTubeAPI();
   }
 
-  /* ================= HELPER SEGMEN BAR SAMPING (RPM, FUEL, HEALTH) ================= */
-  function updateSideSegments(containerId, ratio, isTempBar) {
-    var box = $(containerId);
-    if (!box) return;
-    var segs = box.querySelectorAll('.seg');
-    var activeCount = Math.round(clamp(ratio, 0, 1) * segs.length);
-    for (var i = 0; i < segs.length; i++) {
-      var idx = Number(segs[i].getAttribute('data-idx')) || (segs.length - i);
-      var isOn = idx <= activeCount;
-      segs[i].classList.toggle('active', isOn);
-      if (isTempBar) {
-        segs[i].classList.toggle('hot', isOn && idx >= 4);
-        segs[i].classList.toggle('cool', isOn && idx === 1);
+  /* ================= GEOMETRI KLASTER (SVG) ================= */
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var DIAL = { cx: 500, cy: 240, a0: 225, sweep: 270, max: 8000, redFrom: 6500 };
+  var RING_A0 = 225;
+  var RING_SWEEP = 270;
+
+  function polar(cx, cy, r, deg) {
+    var rad = deg * Math.PI / 180;
+    return { x: cx + r * Math.sin(rad), y: cy - r * Math.cos(rad) };
+  }
+
+  function arcPath(cx, cy, r, a0, a1) {
+    if (a1 - a0 < 0.05) return '';
+    var s = polar(cx, cy, r, a0);
+    var e = polar(cx, cy, r, a1);
+    var large = (a1 - a0) > 180 ? 1 : 0;
+    return 'M' + s.x.toFixed(2) + ' ' + s.y.toFixed(2) +
+      ' A' + r + ' ' + r + ' 0 ' + large + ' 1 ' + e.x.toFixed(2) + ' ' + e.y.toFixed(2);
+  }
+
+  function svgEl(name, attrs, cls) {
+    var el = document.createElementNS(SVGNS, name);
+    for (var k in attrs) {
+      if (Object.prototype.hasOwnProperty.call(attrs, k)) el.setAttribute(k, attrs[k]);
+    }
+    if (cls) el.setAttribute('class', cls);
+    return el;
+  }
+
+  function dialAngle(rpm) {
+    return DIAL.a0 + clamp(rpm / DIAL.max, 0, 1) * DIAL.sweep;
+  }
+
+  function setD(el, d) {
+    if (!el || el.__d === d) return;
+    el.setAttribute('d', d);
+    el.__d = d;
+  }
+
+  var ringVals = {};
+
+  function setRing(el, p) {
+    if (!el || !el.__ring) return;
+    var r = el.__ring;
+    setD(el, arcPath(r[0], r[1], r[2], RING_A0, RING_A0 + RING_SWEEP * clamp(p, 0, 1)));
+  }
+
+  function buildDial() {
+    var ticks = $('dialTicks');
+    var nums = $('dialNums');
+    var i, v, a, p1, p2, major;
+
+    if (ticks) {
+      for (i = 0; i <= 32; i++) {
+        v = i / 4;
+        a = DIAL.a0 + (v / 8) * DIAL.sweep;
+        major = (i % 4 === 0);
+        p1 = polar(DIAL.cx, DIAL.cy, 146, a);
+        p2 = polar(DIAL.cx, DIAL.cy, 146 - (major ? 14 : 7), a);
+        var cls = 'tick ' + (major ? 'major' : 'minor') + (v * 1000 >= DIAL.redFrom ? ' red' : '');
+        ticks.appendChild(svgEl('line', {
+          x1: p1.x.toFixed(2), y1: p1.y.toFixed(2),
+          x2: p2.x.toFixed(2), y2: p2.y.toFixed(2)
+        }, cls));
       }
     }
+
+    if (nums) {
+      for (i = 0; i <= 8; i++) {
+        a = DIAL.a0 + (i / 8) * DIAL.sweep;
+        var pt = polar(DIAL.cx, DIAL.cy, 114, a);
+        var t = svgEl('text', { x: pt.x.toFixed(2), y: pt.y.toFixed(2) }, 'dial-num');
+        t.textContent = String(i);
+        nums.appendChild(t);
+      }
+    }
+
+    var red = $('redZone');
+    if (red) red.setAttribute('d', arcPath(DIAL.cx, DIAL.cy, 152, dialAngle(DIAL.redFrom), dialAngle(DIAL.max)));
+
+    var tracks = document.querySelectorAll('[data-ring]');
+    for (i = 0; i < tracks.length; i++) {
+      var p = tracks[i].getAttribute('data-ring').split(',').map(Number);
+      tracks[i].setAttribute('d', arcPath(p[0], p[1], p[2], RING_A0, RING_A0 + RING_SWEEP));
+    }
+
+    var vals = document.querySelectorAll('[data-ring-val]');
+    for (i = 0; i < vals.length; i++) {
+      vals[i].__ring = vals[i].getAttribute('data-ring-val').split(',').map(Number);
+    }
+  }
+
+  /* ================= BAR SEGMEN (FUEL / HEALTH / ENGINE LOAD) ================= */
+  var bars = {};
+
+  function buildBars() {
+    var els = document.querySelectorAll('.seg-bar');
+    for (var i = 0; i < els.length; i++) {
+      var g = els[i];
+      var x = Number(g.getAttribute('data-x'));
+      var y = Number(g.getAttribute('data-y'));
+      var h = Number(g.getAttribute('data-h'));
+      var n = Number(g.getAttribute('data-n'));
+      var w = Number(g.getAttribute('data-w'));
+      var gap = 2.5;
+      var sh = (h - gap * (n - 1)) / n;
+      var segs = [];
+      for (var k = 0; k < n; k++) {
+        var t = n > 1 ? (k - (n - 1) / 2) / ((n - 1) / 2) : 0;
+        var cls = 'seg' + (k < n * 0.3 ? ' hi' : (k >= n * 0.7 ? ' lo' : ''));
+        var r = svgEl('rect', {
+          x: (x + 7 * t * t).toFixed(2),
+          y: (y + k * (sh + gap)).toFixed(2),
+          width: w,
+          height: sh.toFixed(2),
+          rx: 1.6
+        }, cls);
+        g.appendChild(r);
+        segs.push(r);
+      }
+      bars[g.id] = { segs: segs, lit: -1 };
+    }
+  }
+
+  function setBar(id, ratio) {
+    var b = bars[id];
+    if (!b) return;
+    var n = b.segs.length;
+    var lit = Math.round(clamp(ratio, 0, 1) * n);
+    if (lit === b.lit) return;
+    b.lit = lit;
+    for (var k = 0; k < n; k++) {
+      b.segs[k].classList.toggle('on', (n - 1 - k) < lit);
+    }
+  }
+
+  /* ================= ANIMASI BOOT (SWEEP) & LOOP RENDER ================= */
+  var boot = { t0: 0, on: false };
+  var disp = { rpm: 0, fuel: 100, health: 100, engine: 0 };
+  var lastAng = -999;
+  var needleEl = null;
+  var rpmArcEl = null;
+  var fuelArcEl = null;
+  var healthArcEl = null;
+  var engineArcEl = null;
+
+  function ease(x) { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); }
+
+  function startBoot() {
+    boot.t0 = performance.now();
+    boot.on = true;
+  }
+
+  function bootLevel(now) {
+    if (!boot.on) return 0;
+    var t = (now - boot.t0) / 1000;
+    if (t < 0.9) return ease(t / 0.9);
+    if (t < 1.05) return 1;
+    if (t < 2.15) return 1 - ease((t - 1.05) / 1.1);
+    boot.on = false;
+    return 0;
+  }
+
+  function smooth(cur, target, k) {
+    var d = target - cur;
+    return Math.abs(d) < 0.05 ? target : cur + d * k;
+  }
+
+  function frame(now) {
+    var lvl = bootLevel(now);
+
+    disp.rpm = smooth(disp.rpm, S.rpm, 0.14);
+    disp.fuel = smooth(disp.fuel, clamp(S.fuel, 0, 100), 0.1);
+    disp.health = smooth(disp.health, clamp(S.health, 0, 100), 0.1);
+    disp.engine = smooth(disp.engine, S.engine ? 1 : 0, 0.08);
+
+    var rp = Math.max(clamp(disp.rpm / DIAL.max, 0, 1), lvl);
+    var fp = Math.max(disp.fuel / 100, lvl);
+    var hp = Math.max(disp.health / 100, lvl);
+    var ep = Math.max(disp.engine, lvl);
+
+    var base = DIAL.a0 + rp * DIAL.sweep;
+    var jitter = (S.engine && lvl === 0) ? Math.sin(now / 53) * 0.22 : 0;
+    var ang = base + jitter;
+
+    if (needleEl && Math.abs(ang - lastAng) > 0.02) {
+      needleEl.setAttribute('transform', 'rotate(' + ang.toFixed(2) + ' ' + DIAL.cx + ' ' + DIAL.cy + ')');
+      lastAng = ang;
+    }
+
+    setD(rpmArcEl, arcPath(DIAL.cx, DIAL.cy, 157, DIAL.a0, base));
+    setRing(fuelArcEl, fp);
+    setRing(healthArcEl, hp);
+    setRing(engineArcEl, ep);
+
+    setBar('fuelBar', fp);
+    setBar('healthBar', hp);
+    setBar('engineBar', rp);
+
+    requestAnimationFrame(frame);
+  }
+
+  function updateClock() {
+    var d = new Date();
+    setText('clockValue', String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'));
   }
 
   /* ================= RENDER HUD ================= */
   function renderRPM() {
-    var rpmClamped = clamp(S.rpm, 0, 8000);
-    var progress = rpmClamped / 8000;
-
-    var fill = $('rpmFill');
-    if (fill) fill.style.width = (progress * 100) + '%';
-
-    var ringFill = $('rpmRingFill');
-    if (ringFill) {
-      ringFill.setAttribute('stroke-dasharray', (progress * SUB_RING_ARC).toFixed(1) + ' 300');
-    }
-
-    setText('rpmTextValue', Math.round(rpmClamped));
-    updateSideSegments('rpmSideSegments', S.engine ? Math.max(0.2, progress) : 0, true);
-
+    var progress = clamp(S.rpm, 0, 8000) / 8000;
     cockpit.classList.toggle('redline', progress > 0.85);
   }
 
   function renderSpeed() {
-    var displaySpeed = Math.round(S.speed);
-    setText('speedValue', String(displaySpeed).padStart(3, '0'));
+    setText('speedValue', String(Math.round(S.speed)).padStart(3, '0'));
     setText('speedUnit', S.speedMode === 1 ? 'MPH' : (S.speedMode === 2 ? 'KNOTS' : 'KM/H'));
 
-    // Rotasi Jarum Speedometer Tengah (-120deg s/d +120deg untuk skala 0 - 280)
-    var speedRatio = clamp(S.speed / MAX_DIAL_SPEED, 0, 1);
-    var needleDeg = -120 + (speedRatio * 240);
-    var needle = $('speedNeedleGroup');
-    if (needle) {
-      needle.setAttribute('transform', 'rotate(' + needleDeg.toFixed(2) + ' 140 140)');
-    }
-
-    // Busur Progress Neon Speedometer Tengah (Panjang penuh 240deg = 477.5)
-    var arcFill = $('speedArcFill');
-    if (arcFill) {
-      arcFill.setAttribute('stroke-dasharray', (speedRatio * 477.5).toFixed(1) + ' 800');
-    }
-
     var speedMPH = S.speedMode === 1 ? S.speed : (S.speedMS * 2.236936);
-    var over60 = speedMPH >= SPEED_LIMIT_MPH;
-    var over85 = speedMPH >= EXTREME_SPEED_MPH;
-
-    cockpit.classList.toggle('overspeed', over60);
-    cockpit.classList.toggle('extreme-speed', over85);
+    cockpit.classList.toggle('overspeed', speedMPH >= SPEED_LIMIT_MPH);
+    cockpit.classList.toggle('extreme-speed', speedMPH >= EXTREME_SPEED_MPH);
   }
 
   function renderGear() {
     setText('gearValue', S.gear);
+    setText('gearValue2', S.gear);
   }
 
   function renderHeadlights() {
     var el = $('headlightIndicator');
     if (el) {
       el.classList.remove('active', 'low-beam', 'high-beam');
-      if (S.lights === 1) {
-        el.classList.add('active', 'low-beam');
-        el.title = 'Headlights: Low Beam';
-      } else if (S.lights === 2) {
-        el.classList.add('active', 'high-beam');
-        el.title = 'Headlights: High Beam';
-      } else {
-        el.title = 'Headlights: Off';
-      }
+      if (S.lights === 1) el.classList.add('active', 'low-beam');
+      else if (S.lights === 2) el.classList.add('active', 'high-beam');
     }
     cockpit.classList.toggle('lights-on', S.lights === 1 || S.lights === 2);
     cockpit.classList.toggle('high-beam', S.lights === 2);
@@ -1275,16 +1361,11 @@
     var rightEl = $('rightIndicator');
     if (leftEl) leftEl.classList.toggle('active', S.left);
     if (rightEl) rightEl.classList.toggle('active', S.right);
-
-    var hazard = S.left && S.right;
-    cockpit.classList.toggle('hazard-active', hazard);
-    cockpit.classList.toggle('look-left', S.left && !S.right);
-    cockpit.classList.toggle('look-right', S.right && !S.left);
+    cockpit.classList.toggle('hazard-active', S.left && S.right);
   }
 
   function renderOdometer() {
-    var odoInt = Math.floor(Math.max(0, S.odo));
-    setText('odometerValue', String(odoInt).padStart(6, '0'));
+    setText('odometerValue', String(Math.floor(Math.max(0, S.odo))).padStart(6, '0'));
     setText('odoUnit', S.speedMode === 0 ? 'km' : 'mi');
   }
 
@@ -1296,18 +1377,16 @@
     if (S.locked) {
       icon.classList.remove('unlocked');
       icon.classList.add('locked');
-      icon.title = 'Doors: Locked';
       shackle.setAttribute('d', 'M7 11V7a5 5 0 0 1 10 0v4');
     } else {
       icon.classList.remove('locked');
       icon.classList.add('unlocked');
-      icon.title = 'Doors: Unlocked';
       shackle.setAttribute('d', 'M7 11V7a5 5 0 0 1 9.9-1');
     }
 
     if (prevLockedState !== null && prevLockedState !== S.locked) {
       icon.classList.remove('lock-snap');
-      void icon.offsetWidth;
+      void icon.getBoundingClientRect();
       icon.classList.add('lock-snap');
       if (lockSnapTimer) clearTimeout(lockSnapTimer);
       lockSnapTimer = setTimeout(function () {
@@ -1324,53 +1403,42 @@
       popTimer = setTimeout(function () {
         cockpit.classList.remove('engine-pop');
       }, 650);
+      startBoot();
     }
     prevEngineState = S.engine;
 
     cockpit.classList.toggle('engine-off', !S.engine);
+    setText('engineValue', S.engine ? 'ON' : 'OFF');
+
     var icon = $('engineCheck');
     if (icon) {
-      icon.className = 'vehicle-indicator engine-dial-icon' + (S.engine ? ' active' : '');
-      if (S.engine && S.health <= 20) {
-        icon.classList.add('danger');
-      }
+      icon.classList.toggle('active', S.engine);
+      icon.classList.toggle('danger', S.engine && S.health <= 20);
     }
-    renderRPM();
     updateBeltBeep();
   }
 
   function renderSeatbelt() {
     var icon = $('seatbeltIndicator');
-    if (icon) icon.className = 'vehicle-indicator belt-pill' + (!S.belt ? ' active danger' : '');
+    if (icon) {
+      icon.classList.toggle('active', !S.belt);
+      icon.classList.toggle('danger', !S.belt);
+    }
+    var dashes = $('beltDashes');
+    if (dashes) dashes.classList.toggle('ok', S.belt);
     cockpit.classList.toggle('belt-unfastened', !S.belt);
     updateBeltBeep();
   }
 
   function renderFuel() {
     var f = clamp(S.fuel, 0, 100);
-    var ratio = f / 100;
     setText('fuelValue', Math.round(f) + '%');
-
-    var ringFill = $('fuelRingFill');
-    if (ringFill) {
-      ringFill.setAttribute('stroke-dasharray', (ratio * SUB_RING_ARC).toFixed(1) + ' 300');
-    }
-    updateSideSegments('fuelSideSegments', ratio, false);
-
     cockpit.classList.toggle('fuel-critical', f <= 15);
   }
 
   function renderHealth() {
     var h = clamp(S.health, 0, 100);
-    var ratio = h / 100;
     setText('healthValue', Math.round(h) + '%');
-
-    var ringFill = $('healthRingFill');
-    if (ringFill) {
-      ringFill.setAttribute('stroke-dasharray', (ratio * SUB_RING_ARC).toFixed(1) + ' 300');
-    }
-    updateSideSegments('healthSideSegments', ratio, false);
-
     cockpit.classList.toggle('hp-high', h >= 80);
     cockpit.classList.toggle('hp-hurt', h < 80 && h >= 20);
     cockpit.classList.toggle('hp-weak', h < 20);
@@ -1527,13 +1595,13 @@
     } catch (e) {}
   }
 
-  var THEME_LABELS = ['Cyber Neon Violet', 'Hyper Magenta Rose', 'Electric Cyan Gold'];
+  var THEME_LABELS = ['Violet Neon', 'Magenta Pink', 'Cyan Ice'];
   var HINTS = {
     none: 'Pilih mode · klik kanan untuk menutup menu',
     move: 'Mode PINDAH: tahan & geser mouse untuk memindahkan HUD',
     resize: 'Mode RESIZE: geser mouse atau scroll untuk ubah ukuran',
     reset: 'Posisi & ukuran dikembalikan ke default',
-    theme: 'Tema warna Cyber Cluster diganti'
+    theme: 'Tema warna klaster diganti'
   };
 
   function setMode(m, hintKey) {
@@ -1622,14 +1690,19 @@
   window.addEventListener('resize', function () { clampLayout(); });
 
   /* ================= INIT ================= */
-  buildSpeedometerScale();
-  updateClusterClock();
-  setInterval(updateClusterClock, 10000);
-
   loadLayout();
   clampLayout();
   setMode(null);
+  buildDial();
+  buildBars();
+  needleEl = $('needle');
+  rpmArcEl = $('rpmArc');
+  fuelArcEl = $('fuelArc');
+  healthArcEl = $('healthArc');
+  engineArcEl = $('engineArc');
   setupMusicPlayer();
+  updateClock();
+  setInterval(updateClock, 1000);
 
   window.setEngine(false);
   window.setSpeed(0);
@@ -1643,6 +1716,10 @@
   window.setSeatbelts(false);
   window.setDoorLock(false);
   window.setOdometer(0);
+
+  // Animasi boot: jarum & gauge menyapu penuh lalu kembali
+  startBoot();
+  requestAnimationFrame(frame);
 
   window.addEventListener('message', function (ev) {
     var d = ev.data;
@@ -1677,3 +1754,4 @@
     }
   });
 })();
+

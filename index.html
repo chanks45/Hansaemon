@@ -3,42 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CYBER NEON | Sport Cluster HUD</title>
+  <title>NEON VIOLET | Instrument Cluster HUD</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Orbitron:ital,wght@0,600;0,700;0,800;0,900;1,800;1,900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <main id="cockpit" class="theme-white engine-off hp-high" aria-label="Vehicle HUD">
-
-    <!-- FLOATING MINI AUDIO PILL DI ATAS CLUSTER -->
-    <div id="mini-music-pill" class="mini-music-pill no-drag" aria-label="Mini Audio Controller">
-      <div class="mini-pill-left">
-        <span id="miniSourceBadge" class="mini-source-badge">📻 RADIO</span>
-        <div id="miniEq" class="mini-eq" aria-hidden="true">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
-
-      <div class="mini-track-wrap" title="Sedang Diputar">
-        <div id="miniTrackTitle" class="mini-track-title">Delta FM</div>
-      </div>
-
-      <div class="mini-pill-controls">
-        <button id="btn-mini-prev" class="mini-ctrl-btn" type="button" title="Sebelumnya">⏮</button>
-        <button id="btn-mini-play" class="mini-ctrl-btn mini-play-toggle" type="button" title="Play / Pause">▶</button>
-        <button id="btn-mini-next" class="mini-ctrl-btn" type="button" title="Berikutnya">⏭</button>
-        <button id="btn-mini-open" class="mini-ctrl-btn mini-panel-btn" type="button" title="Buka Panel Musik">🎵</button>
-        <button id="btn-mini-close" class="mini-ctrl-btn mini-close-btn" type="button" title="Sembunyikan Mini Player">×</button>
-      </div>
-    </div>
+  <main id="cockpit" class="theme-violet engine-off hp-high" aria-label="Vehicle HUD">
 
     <!-- PENGATURAN HUD & DUAL-MODE MUSIC PLAYER -->
     <div id="settingsMenu">
       <div class="settings-heading">
         <span class="settings-dot"></span>
-        <span>CYBER CLUSTER CONFIG</span>
+        <span>CLUSTER CONFIG</span>
         <button id="closeSettings" class="icon-button" type="button" aria-label="Tutup pengaturan">×</button>
       </div>
 
@@ -160,274 +138,230 @@
 
       <div id="settingsHint">Klik kanan untuk menutup menu</div>
       <div class="settings-footer">
-        <span>CYBER CLUSTER OS</span>
-        <span>NEON SPORT EDITION</span>
+        <span>NEON CLUSTER OS</span>
+        <span>VIOLET EDITION</span>
       </div>
     </div>
 
-    <!-- WRAPPER UTAMA CLUSTER CYBER NEON -->
-    <div class="cluster-wrapper">
-      <div class="hud-card cluster-housing">
-        <div id="hudNotice" class="hud-notice" role="status" aria-live="polite"></div>
-
-        <!-- SVG DEKORASI BINGKAI POLIGON FUTURISTIK -->
-        <svg class="cluster-frame-svg" viewBox="0 0 680 340" fill="none" aria-hidden="true">
-          <!-- Siluet Luar Dashboard -->
-          <path class="frame-bg" d="M 44 48 L 214 34 C 268 8, 412 8, 466 34 L 636 48 L 672 152 L 638 264 L 582 324 L 98 324 L 42 264 L 8 152 Z" />
-          <!-- Garis Neon Luar -->
-          <path class="frame-line-outer" d="M 49 53 L 216 39 C 268 14, 412 14, 464 39 L 631 53 L 664 152 L 632 260 L 578 318 L 102 318 L 48 260 L 16 152 Z" />
-          <!-- Aksen Sudut Kiri & Kanan -->
-          <path class="frame-accent" d="M 26 138 L 54 64 L 200 50" />
-          <path class="frame-accent" d="M 654 138 L 626 64 L 480 50" />
-          <path class="frame-accent-glow" d="M 64 260 L 216 260" />
-          <path class="frame-accent-glow" d="M 464 260 L 616 260" />
-          <!-- Trapesium Bar Bawah -->
-          <polygon class="bottom-bar-poly" points="104,272 576,272 598,312 82,312" />
-        </svg>
-
-        <!-- GRID 3 KOLOM UTAMA (KIRI: GEAR & RPM | TENGAH: SPEED | KANAN: FUEL & ENGINE) -->
-        <div class="cluster-main-grid">
-
-          <!-- ================= SAYAP KIRI: GEAR (ATAS) & RPM (BAWAH) ================= -->
-          <div class="wing left-wing">
-            <!-- Panel Atas: GIGI / GEAR -->
-            <div class="gear-wing-panel" title="Current Gear">
-              <svg class="gear-box-svg" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true">
-                <polygon class="gear-poly-bg" points="24,8 194,4 180,92 6,96" />
-                <polyline class="gear-poly-glow" points="10,86 26,12 188,8" />
-                <polyline class="gear-poly-sub" points="32,93 177,89 190,24" />
-              </svg>
-              <div class="gear-wing-content">
-                <div id="gearValue" class="gear-main-digit">N</div>
-                <div class="gear-main-label">GEAR</div>
-              </div>
-            </div>
-
-            <!-- Panel Bawah: RPM GAUGE & BAR SUHU -->
-            <div class="sub-gauge-wrap left-gauge-wrap" title="Engine RPM">
-              <!-- Bar Vertikal Melengkung H - C di Kiri RPM -->
-              <div class="side-arc-bar left-arc">
-                <span class="arc-lbl top-h">H</span>
-                <div id="rpmSideSegments" class="arc-segments">
-                  <span class="seg" data-idx="5"></span>
-                  <span class="seg" data-idx="4"></span>
-                  <span class="seg" data-idx="3"></span>
-                  <span class="seg" data-idx="2"></span>
-                  <span class="seg" data-idx="1"></span>
-                </div>
-                <span class="arc-lbl bot-c">C</span>
-                <svg class="temp-mini-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 3a2 2 0 0 0-2 2v8.2a4 4 0 1 0 4 0V5a2 2 0 0 0-2-2zm-6 16c1.5 0 2-1 3.5-1s2 1 3.5 1 2-1 3.5-1 2 1 3.5 1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
-
-              <!-- Dial Bulat RPM -->
-              <div class="sub-dial rpm-dial">
-                <svg class="sub-dial-svg" viewBox="0 0 120 120" aria-hidden="true">
-                  <circle class="sub-ring-outer" cx="60" cy="60" r="54" />
-                  <circle class="sub-ring-track" cx="60" cy="60" r="45" stroke-dasharray="212 300" transform="rotate(135 60 60)" />
-                  <circle id="rpmRingFill" class="sub-ring-fill" cx="60" cy="60" r="45" stroke-dasharray="0 300" transform="rotate(135 60 60)" />
-                </svg>
-                <div id="rpmFill" class="hidden-compat"></div>
-
-                <div class="sub-dial-inner">
-                  <span class="sub-title">RPM</span>
-                  <svg class="sub-icon rpm-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M4 17a8 8 0 1 1 16 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-                    <path d="M12 17l4.5-5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-                    <circle cx="12" cy="17" r="2" fill="currentColor"/>
-                  </svg>
-                  <b id="rpmTextValue" class="sub-val">0</b>
-                  <span class="sub-sublabel">RPM</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ================= TENGAH: MAIN SPEEDOMETER DIAL ================= -->
-          <div class="center-speedo-zone">
-            <div class="main-speedo-dial">
-              <svg class="speedo-svg" viewBox="0 0 280 280" aria-hidden="true">
-                <defs>
-                  <linearGradient id="speedArcGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="var(--hud)" />
-                    <stop offset="65%" stop-color="var(--accent)" />
-                    <stop offset="100%" stop-color="#ff1744" />
-                  </linearGradient>
-                  <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="3.5" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-
-                <!-- Lingkaran Bezel Luar, Tengah & Inti -->
-                <circle class="speedo-bezel-outer" cx="140" cy="140" r="134" />
-                <circle class="speedo-bezel-mid" cx="140" cy="140" r="125" />
-                <circle class="speedo-core-ring" cx="140" cy="140" r="72" />
-
-                <!-- Busur Track & Busur Progress Kecepatan (240 Derajat, r=114 -> 477.5) -->
-                <circle class="speedo-arc-track" cx="140" cy="140" r="114"
-                        stroke-dasharray="477.5 800" transform="rotate(150 140 140)" />
-                <circle class="speedo-arc-redzone" cx="140" cy="140" r="114"
-                        stroke-dasharray="85 800" stroke-dashoffset="-392.5" transform="rotate(150 140 140)" />
-                <circle id="speedArcFill" class="speedo-arc-fill" cx="140" cy="140" r="114"
-                        stroke="url(#speedArcGrad)" stroke-dasharray="0 800" transform="rotate(150 140 140)" filter="url(#neonGlow)" />
-
-                <!-- Grup Tick Marks & Angka Skala 0 - 280 -->
-                <g id="speedoTicksGroup"></g>
-                <g id="speedoNumsGroup"></g>
-
-                <!-- Jarum Speedometer Neon -->
-                <g id="speedNeedleGroup" class="speed-needle-group" transform="rotate(-120 140 140)">
-                  <polygon class="needle-glow" points="140,26 135,140 145,140" />
-                  <polygon class="needle-core" points="140,30 137.5,140 142.5,140" />
-                  <circle class="needle-cap" cx="140" cy="140" r="10" />
-                </g>
-              </svg>
-
-              <!-- Tampilan Digital Kecepatan Bersih di Tengah Dial -->
-              <div class="speedo-center-readout">
-                <div id="speedValue" class="speed-main-digits">000</div>
-                <div class="speed-unit-row">
-                  <span id="speedUnit">KM/H</span>
-                  <span id="extremeBadge" class="extreme-badge">MAX!</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ================= SAYAP KANAN: FUEL (ATAS) & ENGINE HEALTH (BAWAH) ================= -->
-          <div class="wing right-wing">
-            <!-- Panel Atas: FUEL GAUGE -->
-            <div class="sub-gauge-wrap right-gauge-wrap" title="Fuel Level">
-              <div class="side-arc-bar right-arc">
-                <span class="arc-lbl top-f">F</span>
-                <div id="fuelSideSegments" class="arc-segments">
-                  <span class="seg active" data-idx="5"></span>
-                  <span class="seg active" data-idx="4"></span>
-                  <span class="seg active" data-idx="3"></span>
-                  <span class="seg active" data-idx="2"></span>
-                  <span class="seg active" data-idx="1"></span>
-                </div>
-                <span class="arc-lbl bot-e">E</span>
-              </div>
-
-              <div class="sub-dial fuel-dial">
-                <svg class="sub-dial-svg" viewBox="0 0 120 120" aria-hidden="true">
-                  <circle class="sub-ring-outer" cx="60" cy="60" r="54" />
-                  <circle class="sub-ring-track" cx="60" cy="60" r="45" stroke-dasharray="212 300" transform="rotate(135 60 60)" />
-                  <circle id="fuelRingFill" class="sub-ring-fill" cx="60" cy="60" r="45" stroke-dasharray="212 300" transform="rotate(135 60 60)" />
-                </svg>
-                <div class="sub-dial-inner">
-                  <svg class="sub-icon fuel-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M6 4h8v16H6zM14 9h2.5a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0V8l-3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-                    <rect x="8" y="6.5" width="4" height="3.5" fill="currentColor"/>
-                  </svg>
-                  <span class="sub-title">FUEL</span>
-                  <b id="fuelValue" class="sub-val">100%</b>
-                </div>
-              </div>
-            </div>
-
-            <!-- Panel Bawah: ENGINE / HEALTH GAUGE -->
-            <div class="sub-gauge-wrap right-gauge-wrap" title="Engine Health">
-              <div class="side-arc-bar right-arc">
-                <span class="arc-lbl top-h">H</span>
-                <div id="healthSideSegments" class="arc-segments">
-                  <span class="seg active" data-idx="5"></span>
-                  <span class="seg active" data-idx="4"></span>
-                  <span class="seg active" data-idx="3"></span>
-                  <span class="seg active" data-idx="2"></span>
-                  <span class="seg active" data-idx="1"></span>
-                </div>
-                <span class="arc-lbl bot-c">C</span>
-              </div>
-
-              <div class="sub-dial engine-dial">
-                <svg class="sub-dial-svg" viewBox="0 0 120 120" aria-hidden="true">
-                  <circle class="sub-ring-outer" cx="60" cy="60" r="54" />
-                  <circle class="sub-ring-track" cx="60" cy="60" r="45" stroke-dasharray="212 300" transform="rotate(135 60 60)" />
-                  <circle id="healthRingFill" class="sub-ring-fill" cx="60" cy="60" r="45" stroke-dasharray="212 300" transform="rotate(135 60 60)" />
-                </svg>
-                <div class="sub-dial-inner">
-                  <div id="engineCheck" class="vehicle-indicator engine-dial-icon" title="Engine Status">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M4 9h3l2-3h6l2 3h3v9h-3l-2 2H8l-2-2H4zM9 6V3h5v3M8 12h3m2 0h3" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/>
-                    </svg>
-                  </div>
-                  <span class="sub-title">ENGINE</span>
-                  <b id="healthValue" class="sub-val">100%</b>
-                </div>
-              </div>
-            </div>
-          </div>
-
+    <!-- FLOATING MINI AUDIO PILL -->
+    <div id="mini-music-pill" class="mini-music-pill no-drag" aria-label="Mini Audio Controller">
+      <div class="mini-pill-left">
+        <span id="miniSourceBadge" class="mini-source-badge">📻 RADIO</span>
+        <div id="miniEq" class="mini-eq" aria-hidden="true">
+          <span></span><span></span><span></span>
         </div>
+      </div>
 
-        <!-- ================= BAR STATUS BAWAH (SEATBELT, LOCK, SEIN, HEADLIGHTS, JAM & ODO) ================= -->
-        <div class="cluster-bottom-bar">
-          <!-- Kiri: Seatbelt & Door Lock -->
-          <div class="bottom-left-status">
-            <div class="slash-accents" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="mini-track-wrap" title="Sedang Diputar">
+        <div id="miniTrackTitle" class="mini-track-title">Delta FM</div>
+      </div>
 
-            <div id="seatbeltIndicator" class="vehicle-indicator belt-pill" title="Seatbelt">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="5.5" r="2.6" fill="currentColor"/>
-                <path d="M8 10.5c0-1.2 1.8-2 4-2s4 .8 4 2v5.5H8v-5.5z" fill="currentColor" opacity="0.45"/>
-                <path d="M6.5 8.5l11 9.5M8 19h8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-              </svg>
-              <span class="status-txt">SEATBELT</span>
-            </div>
-
-            <div id="doorLockIcon" class="vehicle-indicator unlocked lock-pill" title="Doors: Unlocked">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path id="lockShackle" d="M7 11V7a5 5 0 0 1 9.9-1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-                <rect x="5" y="11" width="14" height="10" rx="2.4" fill="none" stroke="currentColor" stroke-width="2.2" />
-                <circle cx="12" cy="15.5" r="1.3" fill="currentColor" />
-              </svg>
-            </div>
-          </div>
-
-          <!-- Tengah: Lampu Sein Kiri/Kanan & Headlights -->
-          <div class="bottom-center-signals">
-            <div id="leftIndicator" class="turn-arrow left" title="Sein Kiri">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M14 5l-8 7 8 7v-4.5h6v-5h-6V5z" fill="currentColor"/>
-              </svg>
-            </div>
-
-            <div id="rightIndicator" class="turn-arrow right" title="Sein Kanan">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M10 5l8 7-8 7v-4.5H4v-5h6V5z" fill="currentColor"/>
-              </svg>
-            </div>
-
-            <div id="headlightIndicator" class="vehicle-indicator beam-icon" title="Headlights">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 7h5a5 5 0 0 1 0 10H4zM13 8h7M13 12h8M13 16h7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-          </div>
-
-          <!-- Kanan: Jam & Odometer -->
-          <div class="bottom-right-odo">
-            <div id="clockDisplay" class="cluster-clock">12:59</div>
-            <div class="odo-readout" title="Odometer">
-              <span class="odo-lbl">ODO</span>
-              <b id="odometerValue">000000</b>
-              <span id="odoUnit" class="odo-unit">km</span>
-            </div>
-          </div>
-        </div>
-
-        <div id="heartCharms" class="hidden-compat" aria-hidden="true"></div>
+      <div class="mini-pill-controls">
+        <button id="btn-mini-prev" class="mini-ctrl-btn" type="button" title="Sebelumnya">⏮</button>
+        <button id="btn-mini-play" class="mini-ctrl-btn mini-play-toggle" type="button" title="Play / Pause">▶</button>
+        <button id="btn-mini-next" class="mini-ctrl-btn" type="button" title="Berikutnya">⏭</button>
+        <button id="btn-mini-open" class="mini-ctrl-btn mini-panel-btn" type="button" title="Buka Panel Musik">🎵</button>
+        <button id="btn-mini-close" class="mini-ctrl-btn mini-close-btn" type="button" title="Sembunyikan Mini Player">×</button>
       </div>
     </div>
 
-    <!-- INDIKATOR VISUAL OVERSPEED -->
-    <div id="alarmBanner" role="status" aria-live="polite">
-      <span class="alarm-symbol">⚡</span>
-      <span>OVERSPEED! 60+ MPH</span>
+    <!-- ===================== KLASTER INSTRUMEN NEON UNGU ===================== -->
+    <div class="cluster">
+
+      <div id="hudNotice" class="hud-notice" role="status" aria-live="polite"></div>
+
+      <div id="alarmBanner" role="status" aria-live="polite">
+        <span class="alarm-symbol">⚠</span>
+        <span>OVERSPEED // 60+ MPH</span>
+      </div>
+
+      <svg id="clusterSvg" viewBox="0 60 1000 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Instrument cluster">
+        <defs>
+          <filter id="fxGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="fxGlowBig" x="-30%" y="-40%" width="160%" height="180%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <linearGradient id="gSpeed" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" class="st-light"/>
+            <stop offset="0.55" class="st-light"/>
+            <stop offset="1" class="st-main"/>
+          </linearGradient>
+          <linearGradient id="gFrame" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" class="st-deep"/>
+            <stop offset="0.5" class="st-main"/>
+            <stop offset="1" class="st-deep"/>
+          </linearGradient>
+          <radialGradient id="gFace" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="#06011a" stop-opacity="0.82"/>
+            <stop offset="0.78" stop-color="#0a0424" stop-opacity="0.7"/>
+            <stop offset="1" class="st-face-edge"/>
+          </radialGradient>
+        </defs>
+
+        <!-- ===== GARIS DEKORASI RANGKA ===== -->
+        <g class="frame-deco">
+          <path class="frame-line" d="M36 136 L74 106 H312 L336 118"/>
+          <path class="frame-line" d="M964 136 L926 106 H688 L664 118"/>
+          <path class="frame-line thin" d="M60 126 L84 112 H190"/>
+          <path class="frame-line thin" d="M940 126 L916 112 H810"/>
+          <rect class="accent" x="86" y="103" width="46" height="3" rx="1.5"/>
+          <rect class="accent" x="868" y="103" width="46" height="3" rx="1.5"/>
+        </g>
+
+        <!-- ===== PANEL SPEED DIGITAL (KIRI ATAS) ===== -->
+        <g id="speedPod">
+          <path class="panel" d="M62 140 H308 L322 156 V256 L306 268 H40 L30 252 V172 Z"/>
+          <path class="panel-edge" d="M70 146 H300"/>
+          <path class="panel-edge" d="M44 262 H298"/>
+          <text id="speedValue" x="96" y="226" textLength="190" lengthAdjust="spacingAndGlyphs" filter="url(#fxGlowBig)">000</text>
+          <text id="speedUnit" x="190" y="252" text-anchor="middle">MPH</text>
+        </g>
+
+        <!-- ===== DIAL TACHOMETER (TENGAH) ===== -->
+        <g id="dial">
+          <circle class="bezel" cx="500" cy="240" r="170" filter="url(#fxGlow)"/>
+          <circle class="bezel2" cx="500" cy="240" r="164"/>
+          <circle class="face" cx="500" cy="240" r="162"/>
+
+          <path class="ring-track thin" data-ring="500,240,157"/>
+          <path id="rpmArc" class="rpm-arc" data-ring-val="500,240,157" filter="url(#fxGlow)"/>
+          <path id="redZone" class="red-zone"/>
+
+          <g id="dialTicks"></g>
+          <g id="dialNums"></g>
+
+          <circle class="ring-inner" cx="500" cy="240" r="96"/>
+          <circle class="ring-dash" cx="500" cy="240" r="90"/>
+          <text class="dial-cap" x="500" y="184" text-anchor="middle">x1000</text>
+          <text class="dial-cap" x="500" y="198" text-anchor="middle">RPM</text>
+
+          <g id="needle" filter="url(#fxGlow)">
+            <path class="needle-body" d="M498.4 190 L500 90 L501.6 190 Z"/>
+            <line class="needle-core" x1="500" y1="190" x2="500" y2="96"/>
+          </g>
+
+          <circle class="hub" cx="500" cy="240" r="50"/>
+          <circle class="hub-ring" cx="500" cy="240" r="45"/>
+          <text id="gearValue" x="500" y="241" text-anchor="middle" filter="url(#fxGlow)">N</text>
+        </g>
+
+        <!-- ===== POD FUEL (KANAN ATAS) ===== -->
+        <g id="fuelPod">
+          <path class="panel" d="M700 148 L730 120 H880 L902 148 V232 L876 262 H730 L700 234 Z"/>
+          <text class="bar-label" x="727" y="141">F</text>
+          <g id="fuelBar" class="seg-bar" data-x="720" data-y="147" data-h="90" data-n="10" data-w="9"></g>
+          <text class="bar-label" x="727" y="252">E</text>
+
+          <path class="ring-track" data-ring="815,191,58"/>
+          <path id="fuelArc" class="ring-val" data-ring-val="815,191,58" filter="url(#fxGlow)"/>
+          <circle class="ring-inner" cx="815" cy="191" r="50"/>
+          <circle class="ring-dash" cx="815" cy="191" r="66"/>
+
+          <g class="ico pod-ico" transform="translate(801.2 149) scale(1.15)">
+            <path d="M5 21V5.5A1.5 1.5 0 0 1 6.5 4h7A1.5 1.5 0 0 1 15 5.5V21"/>
+            <path d="M3.5 21h12"/>
+            <path d="M7.5 8.5h5"/>
+            <path d="M15 9.5h2a1.5 1.5 0 0 1 1.5 1.5v5.5a1.5 1.5 0 0 0 3 0V9l-2.4-2.6"/>
+          </g>
+          <text class="pod-label" x="815" y="193" text-anchor="middle">FUEL</text>
+          <text id="fuelValue" class="pod-value" x="815" y="219" text-anchor="middle">100%</text>
+        </g>
+
+        <!-- ===== POD ENGINE (KANAN BAWAH) ===== -->
+        <g id="enginePod">
+          <path class="panel" d="M700 306 L730 278 H880 L902 306 V382 L876 410 H730 L700 384 Z"/>
+          <text class="bar-label" x="727" y="298">H</text>
+          <g id="engineBar" class="seg-bar" data-x="720" data-y="303" data-h="84" data-n="10" data-w="9"></g>
+          <text class="bar-label" x="727" y="400">L</text>
+
+          <path class="ring-track" data-ring="815,344,58"/>
+          <path id="engineArc" class="ring-val" data-ring-val="815,344,58" filter="url(#fxGlow)"/>
+          <circle class="ring-inner" cx="815" cy="344" r="50"/>
+          <circle class="ring-dash" cx="815" cy="344" r="66"/>
+
+          <g id="engineCheck" class="vehicle-indicator ico pod-ico" transform="translate(801.2 302) scale(1.15)">
+            <path d="M4 9h3l2-3h6l2 3h3v9h-3l-2 2H8l-2-2H4zM9 6V3h5v3M8 12h3m2 0h3"/>
+          </g>
+          <text class="pod-label" x="815" y="346" text-anchor="middle">ENGINE</text>
+          <text id="engineValue" class="pod-value" x="815" y="372" text-anchor="middle">OFF</text>
+        </g>
+
+        <!-- ===== POD HEALTH (KIRI BAWAH) ===== -->
+        <g id="healthPod">
+          <path class="panel" d="M84 306 L112 278 H282 L312 306 V382 L286 410 H112 L84 384 Z"/>
+          <text class="bar-label" x="100" y="298">H</text>
+          <g id="healthBar" class="seg-bar" data-x="98" data-y="303" data-h="84" data-n="10" data-w="9"></g>
+          <text class="bar-label" x="100" y="400">L</text>
+
+          <path class="ring-track" data-ring="212,344,58"/>
+          <path id="healthArc" class="ring-val" data-ring-val="212,344,58" filter="url(#fxGlow)"/>
+          <circle class="ring-inner" cx="212" cy="344" r="50"/>
+          <circle class="ring-dash" cx="212" cy="344" r="66"/>
+
+          <g class="pod-ico heart-ico" transform="translate(198.2 302) scale(1.15)">
+            <path class="heart-fill" d="M12 20.5C5 15.8 3 12.4 3 9.2A4.6 4.6 0 0 1 12 7.6 4.6 4.6 0 0 1 21 9.2C21 12.4 19 15.8 12 20.5Z"/>
+            <path class="heart-ecg" d="M4.5 12.4h4l1.6-3.2 2.6 6.2 1.8-3h4.5"/>
+          </g>
+          <text class="pod-label" x="212" y="346" text-anchor="middle">HEALTH</text>
+          <text id="healthValue" class="pod-value" x="212" y="372" text-anchor="middle">100%</text>
+        </g>
+
+        <!-- ===== BAR BAWAH: DOOR LOCK / SEATBELT / GEAR / SEIN / LAMPU / JAM / ODO ===== -->
+        <g id="bottomBar">
+          <path class="panel" d="M150 422 H850 L878 440 V468 L850 486 H150 L122 468 V440 Z"/>
+          <path class="sep" d="M352 430 L344 478"/>
+          <path class="sep" d="M470 430 L462 478"/>
+          <path class="sep" d="M650 430 L642 478"/>
+
+          <!-- Door lock -->
+          <g id="doorLockIcon" class="vehicle-indicator ico unlocked" transform="translate(158 441) scale(1.05)">
+            <path id="lockShackle" d="M7 11V7a5 5 0 0 1 9.9-1"/>
+            <rect x="5" y="11" width="14" height="10" rx="2.4"/>
+            <circle class="fill-i" cx="12" cy="15.5" r="1.3"/>
+          </g>
+
+          <!-- Seatbelt -->
+          <g id="seatbeltIndicator" class="vehicle-indicator ico" transform="translate(204 441) scale(1.05)">
+            <circle class="fill-i" cx="12" cy="4.6" r="2.4"/>
+            <path class="fill-i" d="M7.2 9.4c0-.9.8-1.4 1.8-1.4h6c1 0 1.8.5 1.8 1.4L18 16.5H6z"/>
+            <path class="belt-cut" d="M9 8.6l7 8"/>
+            <path d="M4.5 20h15"/>
+          </g>
+          <text class="bar-text" x="240" y="450">SEATBELT</text>
+          <g id="beltDashes">
+            <rect x="240" y="460" width="14" height="2.4" rx="1.2"/>
+            <rect x="258" y="460" width="14" height="2.4" rx="1.2"/>
+            <rect x="276" y="460" width="14" height="2.4" rx="1.2"/>
+          </g>
+
+          <!-- Gear -->
+          <path class="gear-box" d="M386 428 H442 L434 462 H378 Z"/>
+          <text id="gearValue2" x="410" y="446" text-anchor="middle">N</text>
+          <text class="bar-text small" x="411" y="476" text-anchor="middle">GEAR</text>
+
+          <!-- Sein + lampu -->
+          <g id="leftIndicator" class="signal" transform="translate(492 443)">
+            <path d="M20 5 H10 V0 L0 8 L10 16 V11 H20 Z"/>
+          </g>
+          <g id="rightIndicator" class="signal" transform="translate(522 443)">
+            <path d="M0 5 H10 V0 L20 8 L10 16 V11 H0 Z"/>
+          </g>
+          <g id="headlightIndicator" class="vehicle-indicator ico" transform="translate(574 441) scale(1.05)">
+            <path d="M4 8h5a5 5 0 0 1 0 10H4zM13 8h7M13 12h8M13 16h7"/>
+          </g>
+
+          <!-- Jam + odometer -->
+          <text id="clockValue" x="760" y="445" text-anchor="middle">12:59</text>
+          <path class="sep flat" d="M676 452 H846"/>
+          <text class="odo-tag" x="680" y="472">ODO</text>
+          <text id="odometerValue" x="752" y="472" text-anchor="middle">000000</text>
+          <text id="odoUnit" x="800" y="472">mi</text>
+        </g>
+      </svg>
     </div>
 
   </main>
